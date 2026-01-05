@@ -1,0 +1,57 @@
+﻿@{
+    ViewData["Title"] = "Acceso";
+}
+
+<div class="login-wrapper">
+    <div class="main-auth-container" id="container">
+
+        <div class="form-box register-container text-center">
+            <h1 class="fw-bold mb-5">Registro</h1>
+            <form asp-action="Register" asp-controller="Account" method="post">
+                <div class="input-group-figma">
+                    <i class="bi bi-person-fill"></i>
+                    <input type="text" name="Username" placeholder="Nombre de usuario" required />
+                </div>
+                <div class="input-group-figma">
+                    <i class="bi bi-envelope-fill"></i>
+                    <input type="email" name="Email" placeholder="Correo electrónico" required />
+                </div>
+                <div class="input-group-figma">
+                    <i class="bi bi-lock-fill"></i>
+                    <input type="password" name="Password" placeholder="Contraseña" required />
+                </div>
+                <button type="submit" class="btn btn-action-figma mt-4" style="background-color: var(--vet-turquesa); color: white; border-radius: 15px; padding: 15px; border:none; width:100%; font-weight:bold;">Registrarse</button>
+            </form>
+        </div>
+
+        <div class="form-box login-container text-center">
+            <h1 class="fw-bold mb-5">Iniciar sesion</h1>
+            <form asp-action="Login" asp-controller="Account" method="post">
+                <div class="input-group-figma">
+                    <i class="bi bi-envelope-fill"></i>
+                    <input type="email" name="Email" placeholder="Correo electrónico" required />
+                </div>
+                <div class="input-group-figma">
+                    <i class="bi bi-lock-fill"></i>
+                    <input type="password" name="Password" placeholder="Contraseña" required />
+                </div>
+                <button type="submit" class="btn btn-action-figma mt-4" style="background-color: var(--vet-turquesa); color: white; border-radius: 15px; padding: 15px; border:none; width:100%; font-weight:bold;">Continuar</button>
+            </form>
+        </div>
+
+        <div class="overlay-container">
+            <div class="overlay">
+                <div class="overlay-panel overlay-left" style="position: absolute; width: 50%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; left: 50%;">
+                    <h1 class="fw-bold">Hola, Bienvenido!</h1>
+                    <p class="fs-5">¿Tienes una cuenta registrada?</p>
+                    <button type="button" class="btn btn-outline-light rounded-pill px-5 py-2 fs-5" id="loginBtn">Inicia sesion</button>
+                </div>
+                <div class="overlay-panel overlay-right" style="position: absolute; width: 50%; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                    <h1 class="fw-bold">Hola, Bienvenido!</h1>
+                    <p class="fs-5">¿No tienes una cuenta?</p>
+                    <button type="button" class="btn btn-outline-light rounded-pill px-5 py-2 fs-5" id="registerBtn">Registrate</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

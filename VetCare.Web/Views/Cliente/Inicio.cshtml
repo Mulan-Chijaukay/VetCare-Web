@@ -1,0 +1,99 @@
+﻿@model IEnumerable<VetCare.Web.Models.Mascota>
+@{
+    Layout = "_LayoutCliente";
+    ViewData["Title"] = "Inicio";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/dashboardmascotas.css" asp-append-version="true" />
+}
+
+<div class="card shadow-sm border-0 rounded-4 mb-4 dashboard-card">
+    <div class="card-body p-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h5 class="fw-bold m-0 section-title">
+                <i class="bi bi-grid-fill me-2"></i> Mis mascotas
+            </h5>
+            <span class="badge rounded-pill status-badge">@Model.Count() en total</span>
+        </div>
+
+        <div class="mascotas-grid-container">
+            @if (Model.Any())
+            {
+                <div class="row g-3">
+                    @foreach (var mascota in Model.Take(6))
+                    {
+                        string especieClass = mascota.Especie?.ToLower() switch
+                        {
+                            "perro" => "card-perro",
+                            "gato" => "card-gato",
+                            "loro" => "card-loro",
+                            "conejo" => "card-conejo",
+                            "hamster" => "card-hamster",
+                            _ => "card-default"
+                        };
+
+                        <div class="col-12 col-md-6 col-xl-4">
+                            <div class="mascota-item-card h-100 @especieClass shadow-sm">
+                                <div class="d-flex align-items-center">
+                                    <div class="species-icon-circle">
+                                        @if (mascota.Especie?.ToLower() == "perro")
+                                        {
+                                            <span class="emoji-icon">🐶</span>
+                                        }
+                                        else if (mascota.Especie?.ToLower() == "gato")
+                                        {
+
+                                            <span class="emoji-icon">🐱</span>
+                                        }
+                                        else if (mascota.Especie?.ToLower() == "loro")
+                                        {
+
+                                            <span class="emoji-icon">🦜</span>
+                                        }
+                                        else if (mascota.Especie?.ToLower() == "conejo")
+                                        {
+
+                                            <span class="emoji-icon">🐰</span>
+                                        }
+                                        else
+                                        {
+
+                                            <span class="emoji-icon">🐾</span>
+                                        }
+                                    </div>
+                                    <div class="ms-3 flex-grow-1">
+                                        <h6 class="fw-bold mb-0 name-text">@mascota.Nombre</h6>
+                                        <div class="d-flex justify-content-between align-items-center">
+                                            <small class="text-secondary">@mascota.Especie</small>
+                                            <small class="fw-bold text-naranja">@mascota.Raza</small>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+
+        <div class="d-flex gap-3 justify-content-end mt-4">
+            <a href="@Url.Action("AgregarMascota", "Cliente")" class="btn btn-naranja-primary shadow-sm">
+                Agregar una mascota +
+            </a>
+            @if (Model.Count() > 6)
+            {
+                <a href="@Url.Action("MisMascotas", "Cliente")" class="btn btn-ver-todas">
+                    Ver todas (@Model.Count())
+                </a>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="card border-0 shadow-sm rounded-4 p-4 bg-white">
+    <h4 class="fw-bold mb-4" style="color: #2c8a93;">Citas de hoy</h4>
+    <div class="bg-light text-center py-5 rounded-4 border-dashed" style="border: 2px dashed #e2e8f0 !important;">
+        <p class="text-muted m-0 fs-5">No tiene citas registradas para hoy día</p>
+    </div>
+</div>

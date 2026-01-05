@@ -1,0 +1,94 @@
+﻿@model IEnumerable<VetCare.Web.Models.Mascota>
+@{
+    Layout = "_LayoutCliente";
+    ViewData["Title"] = "Mis Mascotas";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/ver-todas-mismascotas.css" asp-append-version="true" />
+}
+
+<div class="container-fluid page-container">
+    <div class="header-navigation-wrapper mb-5">
+        <div class="d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <a href="@Url.Action("Inicio", "Cliente")" class="btn-back-circle shadow-sm" title="Volver al inicio">
+                    <i class="bi bi-arrow-left"></i>
+                </a>
+                <div>
+                    <h1 class="page-title m-0">Mi Familia Animal</h1>
+                    <p class="text-muted m-0">Gestiona la información de todos tus compañeros.</p>
+                </div>
+            </div>
+            <a href="@Url.Action("AgregarMascota", "Cliente")" class="btn-add-primary">
+                <i class="bi bi-plus-circle-fill me-2"></i>Registrar Nueva
+            </a>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="mascotas-grid">
+            @foreach (var mascota in Model)
+            {
+                string especieClass = mascota.Especie?.ToLower() switch
+                {
+                    "perro" => "style-perro",
+                    "gato" => "style-gato",
+                    "loro" => "style-loro",
+                    "conejo" => "style-conejo",
+                    "hamster" => "style-hamster",
+                    _ => "style-default"
+                };
+
+                <div class="pet-card @especieClass shadow-sm">
+                    <div class="card-accent"></div>
+                    <div class="pet-card-content">
+                        <div class="pet-visual">
+                            <div class="emoji-wrapper">
+                                @if (mascota.Especie?.ToLower() == "perro")
+                                {
+                                    <span>🐶</span>
+                                }
+                                else if (mascota.Especie?.ToLower() == "gato")
+                                {
+
+                                    <span>🐱</span>
+                                }
+                                else if (mascota.Especie?.ToLower() == "loro")
+                                {
+
+                                    <span>🦜</span>
+                                }
+                                else if (mascota.Especie?.ToLower() == "conejo")
+                                {
+
+                                    <span>🐰</span>
+                                }
+                                else
+                                {
+
+                                    <span>🐾</span>
+                                }
+                            </div>
+                        </div>
+                        <div class="pet-info">
+                            <h3 class="pet-name">@mascota.Nombre</h3>
+                            <span class="pet-breed">@mascota.Raza</span>
+                            <div class="pet-tag">@mascota.Especie</div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="empty-state-wrapper shadow-sm">
+            <div class="empty-icon">🐾</div>
+            <h2>Aún no hay huellas aquí</h2>
+            <p>Registra a tu primera mascota para empezar a disfrutar de nuestros servicios.</p>
+            <a href="@Url.Action("AgregarMascota", "Cliente")" class="btn-add-primary mt-3">Registrar ahora</a>
+        </div>
+    }
+</div>

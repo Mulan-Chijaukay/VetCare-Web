@@ -1,0 +1,83 @@
+﻿@model VetCare.Web.Models.Cita
+@{
+    Layout = "_LayoutCliente";
+    ViewData["Title"] = "Solicitar";
+}
+
+<div class="card border-0 shadow-sm rounded-4 p-5 bg-white">
+    <h4 class="fw-bold mb-4 text-dark">Ingrese los datos solicitados a continuación:</h4>
+
+    <form asp-action="GuardarCita" method="post">
+        <div class="row g-4">
+            <div class="col-lg-7">
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Mascota</label>
+                    <select asp-for="MascotaId" class="form-select border-0 bg-light py-3 rounded-3 shadow-sm"
+                            asp-items="@(new SelectList(ViewBag.Mascotas, "Id", "Nombre"))">
+                        <option value="">Seleccione su mascota</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Servicio</label>
+                    <select asp-for="Servicio" class="form-select border-0 bg-light py-3 rounded-3 shadow-sm">
+                        <option value="">Seleccione el tipo de servicio</option>
+                        <option value="Consulta General">Consulta General</option>
+                        <option value="Vacunación">Vacunación</option>
+                        <option value="Baño y Corte">Baño y Corte</option>
+                    </select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Fecha</label>
+                    <input asp-for="Fecha" type="date" class="form-control border-0 bg-light py-3 rounded-3 shadow-sm"
+                           placeholder="Fecha del servicio a solicitar">
+                </div>
+
+                <div class="mb-4">
+                    <label class="form-label fw-bold">Horario</label>
+                    <select asp-for="Horario" class="form-select border-0 bg-light py-3 rounded-3 shadow-sm">
+                        <option value="">Horario</option>
+                        <option value="09:00 AM">09:00 AM</option>
+                        <option value="11:00 AM">11:00 AM</option>
+                        <option value="03:00 PM">03:00 PM</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="col-lg-5">
+                <label class="form-label fw-bold">Observaciones</label>
+                <textarea asp-for="Observaciones" class="form-control border-0 bg-light rounded-3 shadow-sm"
+                          style="height: 380px;" placeholder="Ej: Mi mascota ha estado decaída..."></textarea>
+            </div>
+        </div>
+
+        <div class="mt-5 text-end">
+            <button type="submit" class="btn btn-naranja-figma px-5 py-3 fw-bold rounded-pill shadow">
+                Confirmar Solicitud
+            </button>
+        </div>
+    </form>
+
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        // Alerta de ÉXITO
+        @if (TempData["Mensaje"] != null)
+        {
+                <text>
+                Swal.fire({ title: '¡Logrado!', text: '@TempData["Mensaje"]', icon: 'success' });
+                </text>
+        }
+
+        // Alerta de ERROR (Campos vacíos)
+        @if (TempData["Error"] != null)
+        {
+                <text>
+                Swal.fire({ title: '¡Atención!', text: '@TempData["Error"]', icon: 'warning' });
+                </text>
+        }
+    </script>
+
+
+</div>
