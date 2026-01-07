@@ -1,6 +1,5 @@
-﻿
-
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VetCare.Web.Models
 {
@@ -9,11 +8,14 @@ namespace VetCare.Web.Models
         [Key]
         public int Id { get; set; }
 
-        // Debe ser string para que coincida con el ID de Identity
         public string UsuarioId { get; set; }
 
         [Required(ErrorMessage = "Seleccione una mascota")]
         public int MascotaId { get; set; }
+
+     
+        [ForeignKey("MascotaId")]
+        public virtual Mascota? Mascota { get; set; }
 
         [Required(ErrorMessage = "Seleccione un servicio")]
         public string Servicio { get; set; }
@@ -25,12 +27,17 @@ namespace VetCare.Web.Models
         [Required]
         public string Horario { get; set; }
 
-        public string Observaciones { get; set; }
+        public string? Observaciones { get; set; }
 
-        // Campo para manejar el estado (Pendiente, Confirmada, etc.)
         public string Estado { get; set; } = "Pendiente";
 
-        // NUEVO: Campo para identificar emergencias
         public bool EsEmergencia { get; set; } = false;
+
+        // NUEVO: Para el flujo de roles (Veterinario que atiende)
+        public int? VeterinarioId { get; set; } // FK hacia la tabla Veterinarios
+
+        [ForeignKey("VeterinarioId")]
+        public virtual Veterinario? Veterinario { get; set; } // Objeto de navegación
+        public string? NombreVeterinario { get; set; }
     }
 }

@@ -2,8 +2,10 @@
 
 
 using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using VetCare.Web.Data;
+using VetCare.Web.Models;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,13 +16,25 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
-// 2. CONFIGURACIÓN DE COOKIES (Esto arregla el error de tu imagen)
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-    .AddCookie(options =>
-    {
-        options.LoginPath = "/Account/Index"; // Si no está logueado, va aquí
-        options.AccessDeniedPath = "/Account/AccessDenied";
-    });
+
+// 2. CONFIGURACIÓN DE IDENTITY (Agrega esto ANTES de AddAuthentication)
+builder.Services.AddIdentity<Usuario, Microsoft.AspNetCore.Identity.IdentityRole>(options => {
+    options.Password.RequireDigit = false;
+    options.Password.RequiredLength = 6;
+    options.Password.RequireNonAlphanumeric = false;
+    options.Password.RequireUppercase = false;
+})
+.AddEntityFrameworkStores<ApplicationDbContext>()
+.AddDefaultTokenProviders();
+
+// 3. CONFIGURACIÓN DE COOKIES (Asegúrate de que use el esquema de Identity)
+builder.Services.ConfigureApplicationCookie(options =>
+{
+    options.LoginPath = "/Account/Index";  // Si no está logueado, va aqui
+    options.AccessDeniedPath = "/Account/AccessDenied";
+});
+
+
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages();
@@ -43,7 +57,7 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
-// 3. HABILITAR AUTENTICACIÓN (Orden vital para que funcione el Login)
+// 4. HABILITAR AUTENTICACIÓN (Orden vital para que funcione el Login)
 app.UseAuthentication();
 app.UseAuthorization();
 
@@ -51,5 +65,7 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 app.MapRazorPages();
+
+
 
 app.Run();

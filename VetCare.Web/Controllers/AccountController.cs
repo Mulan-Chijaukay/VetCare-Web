@@ -1,23 +1,21 @@
-﻿
-
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using VetCare.Web.Data;
-using VetCare.Web.Models;
 using System.Security.Claims;
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using BCrypt.Net;
+using VetCare.Web.Models;
 
 namespace VetCare.Web.Controllers
 {
     public class AccountController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        // Usamos SignInManager y UserManager que son las herramientas oficiales de Identity
+        private readonly SignInManager<Usuario> _signInManager;
+        private readonly UserManager<Usuario> _userManager;
 
-        public AccountController(ApplicationDbContext context)
+        public AccountController(UserManager<Usuario> userManager, SignInManager<Usuario> signInManager)
         {
-            _context = context;
+            _userManager = userManager;
+            _signInManager = signInManager;
         }
 
         public IActionResult Index() => View();
@@ -27,19 +25,33 @@ namespace VetCare.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                
+                // 1. Creamos el objeto Usuario con los datos del formulario
                 var nuevoUsuario = new Usuario
                 {
-                    UsuarioId = Guid.NewGuid().ToString(),
-                    Nombre = Username,
+                    UserName = Email, // Identity usa UserName para loguearse, usamos el Email
                     Email = Email,
-                    Password = BCrypt.Net.BCrypt.HashPassword(Password) 
+                    Nombre = Username,
+                    Rol = "Cliente" // Asignamos el rol por defecto
                 };
 
-                _context.Usuarios.Add(nuevoUsuario);
-                await _context.SaveChangesAsync();
+                // 2. IMPORTANTE: Usamos _userManager para crearlo. 
+                // Esto encripta la contraseña y llena los campos Normalized y SecurityStamp.
+                var resultado = await _userManager.CreateAsync(nuevoUsuario, Password);
 
-                return RedirectToAction("Index");
+                if (resultado.Succeeded)
+                {
+                    // 3. Si se creó bien, lo logueamos automáticamente
+                    await _signInManager.SignInAsync(nuevoUsuario, isPersistent: false);
+
+                    // 4. Lo mandamos a su página de inicio
+                    return RedirectToAction("Inicio", "Cliente");
+                }
+
+                // Si hay errores (ej: contraseña muy corta), los mostramos
+                foreach (var error in resultado.Errors)
+                {
+                    ModelState.AddModelError("", error.Description);
+                }
             }
             return View("Index");
         }
@@ -47,25 +59,21 @@ namespace VetCare.Web.Controllers
         [HttpPost]
         public async Task<IActionResult> Login(string Email, string Password)
         {
-            var usuario = await _context.Usuarios.FirstOrDefaultAsync(u => u.Email == Email);
+            // 1. Validar credenciales y crear cookie
+            var resultado = await _signInManager.PasswordSignInAsync(Email, Password, false, lockoutOnFailure: false);
 
-            if (usuario != null && BCrypt.Net.BCrypt.Verify(Password, usuario.Password))
+            if (resultado.Succeeded)
             {
-                // IMPORTANTE: Para que User.FindFirstValue funcione en el resto del sitio,
-                // debemos crear la cookie de autenticación con el ID del usuario
-                var claims = new List<Claim>
+                // 2. Buscar al usuario para ver su rol
+                var usuario = await _userManager.FindByEmailAsync(Email);
+
+                // 3. Redirección inteligente según el rol guardado en la DB
+                if (usuario.Rol == "Admin")
                 {
-                    new Claim(ClaimTypes.Name, usuario.Nombre),
-                    new Claim(ClaimTypes.NameIdentifier, usuario.UsuarioId), // El GUID string
-                    new Claim(ClaimTypes.Email, usuario.Email)
-                };
+                    return RedirectToAction("Index", "Admin"); // Si tienes un panel admin
+                }
 
-                var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
-
-                await HttpContext.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
-                    new ClaimsPrincipal(claimsIdentity));
-
-                return RedirectToAction("Inicio", "Cliente");
+                return RedirectToAction("Inicio", "Cliente"); // Panel de cliente
             }
 
             ViewBag.Error = "Correo o contraseña incorrectos";
@@ -74,7 +82,7 @@ namespace VetCare.Web.Controllers
 
         public async Task<IActionResult> Logout()
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            await _signInManager.SignOutAsync();
             return RedirectToAction("Index");
         }
     }

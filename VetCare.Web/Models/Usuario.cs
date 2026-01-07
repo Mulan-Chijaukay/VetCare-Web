@@ -1,20 +1,15 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using Microsoft.AspNetCore.Identity;
 
 namespace VetCare.Web.Models
 {
-    public class Usuario
+    // Al heredar de IdentityUser, ya se tiene: Id, Email, PasswordHash, etc.
+    public class Usuario : IdentityUser
     {
-        [Key]
-        public string UsuarioId { get; set; } 
 
         [Required(ErrorMessage = "El nombre es obligatorio")]
-        public string Nombre { get; set; }
+        public string Nombre { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "El correo es obligatorio")]
-        [EmailAddress(ErrorMessage = "Ingresa un correo válido")]
-        public string Email { get; set; }
-
-        [Required(ErrorMessage = "La contraseña es obligatoria")]
-        public string Password { get; set; }
+        public string Rol { get; set; }
     }
 }

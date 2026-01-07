@@ -1,0 +1,70 @@
+﻿@model IEnumerable<VetCare.Web.Models.Cita>
+@{
+    Layout = "_LayoutCliente";
+    ViewData["Title"] = "Mis Citas";
+}
+
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/gestionar-citas.css" asp-append-version="true" />
+}
+
+<div class="container-fluid py-4">
+    <div class="d-flex align-items-center gap-3 mb-4">
+        <a href="@Url.Action("Inicio", "Cliente")" class="btn-back-circle shadow-sm">
+            <i class="bi bi-arrow-left"></i>
+        </a>
+        <h2 class="fw-bold m-0" style="color: #2c8a93;">Seguimiento de mis Citas</h2>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        <div class="row g-4">
+            @foreach (var cita in Model)
+            {
+                <div class="col-lg-6">
+                    <div class="card border-0 shadow-sm rounded-4 p-4 bg-white h-100">
+                        <div class="d-flex justify-content-between align-items-start mb-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="bg-light p-3 rounded-3">
+                                    <i class="bi bi-calendar-check text-primary fs-4"></i>
+                                </div>
+                                <div>
+                                    <h5 class="fw-bold mb-0">@cita.Mascota?.Nombre</h5>
+                                    <span class="text-muted small">@cita.Servicio</span>
+                                </div>
+                            </div>
+                            @{
+                                var badgeClass = cita.Estado == "Pendiente" ? "bg-warning" : "bg-success";
+                            }
+                            <span class="badge @badgeClass rounded-pill px-3 py-2">@cita.Estado</span>
+                        </div>
+
+                        <div class="row g-2 border-top pt-3 mt-2">
+                            <div class="col-4">
+                                <small class="text-muted d-block">Fecha</small>
+                                <span class="fw-bold">@cita.Fecha.ToShortDateString()</span>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted d-block">Horario</small>
+                                <span class="fw-bold">@cita.Horario</span>
+                            </div>
+                            <div class="col-4">
+                                <small class="text-muted d-block">Veterinario</small>
+                                <span class="fw-bold">@(cita.NombreVeterinario ?? "Por asignar")</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-5">
+            <i class="bi bi-calendar2-x display-1 text-muted opacity-25"></i>
+            <h4 class="mt-3 text-muted">Aún no tienes citas programadas</h4>
+            <a href="@Url.Action("Solicitar", "Cliente")" class="btn btn-naranja-figma mt-3 px-4">Solicitar Cita</a>
+        </div>
+    }
+</div>

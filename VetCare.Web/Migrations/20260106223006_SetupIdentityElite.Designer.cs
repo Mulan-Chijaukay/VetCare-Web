@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VetCare.Web.Data;
 
@@ -11,9 +12,11 @@ using VetCare.Web.Data;
 namespace VetCare.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260106223006_SetupIdentityElite")]
+    partial class SetupIdentityElite
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -194,14 +197,12 @@ namespace VetCare.Web.Migrations
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
-                    b.Property<int?>("VeterinarioId")
-                        .HasColumnType("int");
+                    b.Property<string>("VeterinarioId")
+                        .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("MascotaId");
-
-                    b.HasIndex("VeterinarioId");
 
                     b.ToTable("Citas");
                 });
@@ -396,13 +397,7 @@ namespace VetCare.Web.Migrations
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.HasOne("Veterinario", "Veterinario")
-                        .WithMany()
-                        .HasForeignKey("VeterinarioId");
-
                     b.Navigation("Mascota");
-
-                    b.Navigation("Veterinario");
                 });
 
             modelBuilder.Entity("VetCare.Web.Models.Mascota", b =>

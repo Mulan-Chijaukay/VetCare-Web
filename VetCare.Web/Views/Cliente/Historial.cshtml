@@ -1,0 +1,59 @@
+﻿@model IEnumerable<VetCare.Web.Models.Cita>
+@{
+    Layout = "_LayoutCliente";
+    ViewData["Title"] = "Historial de Citas";
+}
+
+<div class="container-fluid py-4 px-5">
+    <h2 class="fw-bold mb-4" style="color: #3e929a;">Historial de Citas</h2>
+
+    @if (!Model.Any())
+    {
+        <div class="card border-0 shadow-sm rounded-4 p-5 text-center bg-white">
+            <div class="mb-4">
+                <i class="bi bi-journal-x text-muted" style="font-size: 4rem; opacity: 0.3;"></i>
+            </div>
+            <h4 class="text-muted fw-bold">No cuentas con historial de citas</h4>
+            <p class="text-secondary">Aquí aparecerán las citas que hayas completado o cancelado en el futuro.</p>
+            <div class="mt-3">
+                <a asp-action="Solicitar" class="btn btn-naranja-figma rounded-pill px-4 fw-bold">Agendar mi primera cita</a>
+            </div>
+        </div>
+    }
+    else
+    {
+        <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+            <table class="table table-hover align-middle mb-0">
+                <thead class="bg-light">
+                    <tr>
+                        <th class="ps-4">Mascota</th>
+                        <th>Servicio</th>
+                        <th>Fecha</th>
+                        <th>Veterinario</th>
+                        <th>Estado</th>
+                        <th class="pe-4 text-center">Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var cita in Model)
+                    {
+                        <tr>
+                            <td class="ps-4 fw-bold">@cita.Mascota?.Nombre</td>
+                            <td>@cita.Servicio</td>
+                            <td>@cita.Fecha.ToShortDateString()</td>
+                            <td>@(cita.Veterinario?.Nombre ?? "Atención General")</td>
+                            <td>
+                                <span class="badge rounded-pill @(cita.Estado == "Completada" ? "bg-success" : "bg-danger")">
+                                    @cita.Estado
+                                </span>
+                            </td>
+                            <td class="pe-4 text-center">
+                                <button class="btn btn-sm btn-outline-primary rounded-pill px-3">Ver Detalle</button>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
