@@ -1,6 +1,4 @@
-﻿
-
-using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -14,20 +12,32 @@ namespace VetCare.Web.Controllers
         private readonly ApplicationDbContext _context;
         private readonly UserManager<Usuario> _userManager;
 
-        // El constructor siempre debe ir al inicio para mayor claridad
         public ClienteController(ApplicationDbContext context, UserManager<Usuario> userManager)
         {
             _context = context;
             _userManager = userManager;
         }
 
-        // GET: Cliente/Inicio
+      
         public async Task<IActionResult> Inicio()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return RedirectToAction("Index", "Account");
+
+            var hoy = DateTime.Today;
+
+            
             var mascotas = await _context.Mascotas
                 .Where(m => m.UsuarioId == userId)
                 .ToListAsync();
+
+            var citasHoy = await _context.Citas
+                .Include(c => c.Mascota)
+                .Where(c => c.UsuarioId == userId && c.Fecha.Date == hoy)
+                .OrderBy(c => c.Horario)
+                .ToListAsync();
+
+            ViewBag.CitasHoy = citasHoy;
 
             return View(mascotas);
         }
@@ -43,7 +53,6 @@ namespace VetCare.Web.Controllers
                 nuevaMascota.UsuarioId = userId;
                 _context.Mascotas.Add(nuevaMascota);
                 await _context.SaveChangesAsync();
-                
                 return RedirectToAction("Inicio");
             }
             return RedirectToAction("Index", "Account");
@@ -110,17 +119,13 @@ namespace VetCare.Web.Controllers
             return View(citas);
         }
 
-
-        //Modulo historial
-
         public async Task<IActionResult> Historial()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
-            // Filtramos solo citas finalizadas o canceladas
             var historial = await _context.Citas
                 .Include(c => c.Mascota)
-                .Include(c => c.Veterinario) // Ahora sí funcionará
+                .Include(c => c.Veterinario)
                 .Where(c => c.UsuarioId == userId &&
                            (c.Estado == "Completada" || c.Estado == "Cancelada"))
                 .OrderByDescending(c => c.Fecha)
@@ -129,9 +134,6 @@ namespace VetCare.Web.Controllers
             return View(historial);
         }
 
-
-
-        //Controladores para modulo de configuracion
         public async Task<IActionResult> Configuracion()
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
@@ -142,7 +144,6 @@ namespace VetCare.Web.Controllers
             return View(usuario);
         }
 
-
         [HttpPost]
         public async Task<IActionResult> ActualizarConfiguracion(string nombre, string telefono)
         {
@@ -152,12 +153,11 @@ namespace VetCare.Web.Controllers
             if (usuario != null)
             {
                 usuario.Nombre = nombre;
-                usuario.PhoneNumber = telefono; // Usamos el campo estándar de Identity
+                usuario.PhoneNumber = telefono;
 
                 var resultado = await _userManager.UpdateAsync(usuario);
                 if (resultado.Succeeded)
                 {
-                    // Usamos TempData para pasar el mensaje a la vista tras la redirección
                     TempData["MensajeConfig"] = "Tus datos han sido actualizados con éxito.";
                     return RedirectToAction("Configuracion");
                 }
@@ -166,7 +166,6 @@ namespace VetCare.Web.Controllers
             TempData["Error"] = "No se pudieron guardar los cambios.";
             return RedirectToAction("Configuracion");
         }
-
 
         [HttpPost]
         public async Task<IActionResult> CambiarPassword(string currentPassword, string newPassword)
@@ -186,14 +185,7 @@ namespace VetCare.Web.Controllers
             }
             return RedirectToAction("Configuracion");
         }
-
-
-    } 
-} 
-
-
-
-
-
+    }
+}
 
 

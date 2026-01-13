@@ -33,11 +33,10 @@ namespace VetCare.Web.Models
 
         public bool EsEmergencia { get; set; } = false;
 
-        // NUEVO: Para el flujo de roles (Veterinario que atiende)
         public int? VeterinarioId { get; set; } // FK hacia la tabla Veterinarios
 
         [ForeignKey("VeterinarioId")]
-        public virtual Veterinario? Veterinario { get; set; } // Objeto de navegación
+        public virtual Veterinario? Veterinario { get; set; } 
         public string? NombreVeterinario { get; set; }
     }
 }

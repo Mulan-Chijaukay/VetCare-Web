@@ -1,68 +1,67 @@
-﻿/* Contenedor de la cuadrícula */
+﻿
 .mascotas-grid-container {
     padding: 10px 0;
 }
 
-/* Tarjeta Base: Ahora con un gris más oscuro y bordes definidos */
+
 .mascota-item-card {
     border-radius: 20px;
     padding: 1.5rem;
-    background: #e2e8f0; /* Gris Slate claro para que NO sea blanca */
+    background: #e2e8f0; 
     border: 1px solid #cbd5e1;
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     position: relative;
     overflow: hidden;
 }
 
-    /* Efecto Hover: Resalta al pasar el mouse */
     .mascota-item-card:hover {
         transform: translateY(-5px) scale(1.02);
-        background: #ffffff; /* Solo se vuelve blanca al pasar el mouse */
+        background: #ffffff; 
         box-shadow: 0 15px 30px rgba(44, 138, 147, 0.15);
         border-color: #2c8a93;
     }
 
-/* Diferenciación por Especie (Borde lateral grueso) */
+
 .card-perro {
     border-left: 8px solid #0d6efd !important;
 }
-/* Azul Intenso */
+/* Azul */
 .card-gato {
     border-left: 8px solid #6f42c1 !important;
 }
-/* Morado Intenso */
+/* Morado  */
 .card-loro {
     border-left: 8px solid #198754 !important;
 }
-/* Verde Bosque */
+/* Verde */
 .card-conejo {
     border-left: 8px solid #fd7e14 !important;
 }
-/* Naranja Fuerte */
+/* Naranja */
 .card-hamster {
     border-left: 8px solid #d63384 !important;
 }
-/* Rosado */
+/* rosita uwu */
 .card-default {
     border-left: 8px solid #64748b !important;
 }
-/* Gris oscuro */
 
-/* Círculo del Icono: Forzamos el color turquesa VetCare */
+
+/* Círculo del Icono */
 .species-icon-circle {
     width: 55px;
     height: 55px;
     background: white;
-    color: #2c8a93; /* Color corporativo */
+    color: #2c8a93; 
     border-radius: 16px;
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 2rem; /* Iconos grandes en HD */
+    font-size: 2rem; 
     box-shadow: 0 4px 10px rgba(0,0,0,0.1);
 }
 
-    /* Forzar visualización de iconos de Bootstrap */
+
     .species-icon-circle i {
         display: inline-block !important;
         line-height: 1;
@@ -82,9 +81,9 @@
 
 
 
-/* Botón Principal: Agregar una mascota + */
+/* Botón Principal: Agregar una mascota */
 .btn-naranja-primary {
-    background: linear-gradient(135deg, #ff9d42 0%, #f38a2b 100%) !important; /* Degradado VetCare */
+    background: linear-gradient(135deg, #ff9d42 0%, #f38a2b 100%) !important;
     color: white !important;
     border: none !important;
     border-radius: 12px !important;
@@ -103,10 +102,10 @@
         filter: brightness(1.1);
     }
 
-/* Botón Secundario: Ver todas (10) */
+/* Botón Secundario: Ver todas */
 .btn-ver-todas {
     background: white !important;
-    color: #2c8a93 !important; /* Turquesa corporativo */
+    color: #2c8a93 !important; 
     border: 2px solid #2c8a93 !important;
     border-radius: 12px !important;
     padding: 10px 24px !important;
@@ -125,8 +124,8 @@
 
 
 .emoji-icon {
-    font-size: 1.8rem; /* Tamaño grande para que parezca icono */
+    font-size: 1.8rem; 
     line-height: 1;
     display: block;
-    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); /* Le da profundidad */
+    filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1)); 
 }

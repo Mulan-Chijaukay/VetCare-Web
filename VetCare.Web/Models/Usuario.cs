@@ -3,7 +3,6 @@ using Microsoft.AspNetCore.Identity;
 
 namespace VetCare.Web.Models
 {
-    // Al heredar de IdentityUser, ya se tiene: Id, Email, PasswordHash, etc.
     public class Usuario : IdentityUser
     {
 

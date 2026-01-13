@@ -20,7 +20,7 @@ html, body {
     min-height: 100vh;
 }
 
-/* --- SIDEBAR ELITE --- */
+/*  SIDEBAR */
 .sidebar {
     width: var(--sidebar-w);
     background-color: var(--turquesa);
@@ -44,7 +44,7 @@ html, body {
 }
 
 .sidebar-logo-big {
-    width: 300px; /* Logo imponente */
+    width: 300px;
     max-width: 110%;
     height: auto;
     transition: transform 0.3s;
@@ -93,7 +93,7 @@ html, body {
     display: block;
 }
 
-/* --- CONTENIDO Y HEADER --- */
+/* CONTENIDO Y HEADER */
 .content-wrapper {
     flex-grow: 1;
     margin-left: var(--sidebar-w);
@@ -125,7 +125,7 @@ html, body {
 }
 
 
-/* --- ESTADOS COLAPSADOS (CORREGIDO) --- */
+/* ESTADOS COLAPSADOS */
 
 .sidebar-collapsed .sidebar {
     width: var(--sidebar-collapsed);
@@ -136,25 +136,24 @@ html, body {
     width: calc(100% - var(--sidebar-collapsed));
 }
 
-/* Centrado absoluto de los iconos en modo mini */
+
 .sidebar-collapsed .nav-item {
-    padding: 16px 0 !important; /* Elimina el padding lateral que empujaba el icono */
-    justify-content: center; /* Fuerza el centrado horizontal del icono */
+    padding: 16px 0 !important;
+    justify-content: center;
 }
 
-    /* Ajuste del icono para evitar desviaciones visuales */
     .sidebar-collapsed .nav-item i {
-        margin: 0 !important; /* Elimina el margen que separaba el texto */
-        font-size: 1.6rem; /* Aumenta un poco el tamaño para mejor visibilidad */
+        margin: 0 !important; 
+        font-size: 1.6rem; 
     }
 
-/* Limpieza visual de elementos que no deben verse */
+
 .sidebar-collapsed .nav-text,
 .sidebar-collapsed .sidebar-logo-big {
     display: none;
 }
 
-/* Contenedor del logo en modo mini */
+
 .sidebar-collapsed .sidebar-logo-container {
     min-height: 100px;
     padding: 20px 0;

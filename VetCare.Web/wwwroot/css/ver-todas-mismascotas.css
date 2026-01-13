@@ -31,7 +31,7 @@
     margin-top: 2rem;
 }
 
-/* Estilo de la Card Premium */
+
 .pet-card {
     background: white;
     border-radius: 20px;
@@ -46,7 +46,6 @@
         box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
     }
 
-/* Acentos de Color por Especie */
 .card-accent {
     position: absolute;
     top: 0;
@@ -79,7 +78,6 @@
     background: #94a3b8;
 }
 
-/* Contenido de la Card */
 .pet-card-content {
     padding: 1.5rem;
     display: flex;
@@ -132,7 +130,6 @@
     margin-top: 5px;
 }
 
-/* Botones de Acción */
 .pet-actions {
     display: flex;
     flex-direction: column;
@@ -206,7 +203,7 @@
     width: 48px;
     height: 48px;
     background-color: #ffffff;
-    color: #2c8a93; /* Turquesa VetCare */
+    color: #2c8a93; 
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -214,7 +211,7 @@
     text-decoration: none;
     font-size: 1.4rem;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra sutil */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); 
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
 }
@@ -223,12 +220,11 @@
     .btn-back-circle:hover {
         background-color: #2c8a93;
         color: #ffffff;
-        transform: translateX(-5px); /* Desplazamiento lateral suave */
+        transform: translateX(-5px); 
         box-shadow: 0 6px 16px rgba(44, 138, 147, 0.2);
         border-color: #2c8a93;
     }
 
-    /* Ajuste para el icono interno de Bootstrap */
     .btn-back-circle i {
         display: flex;
         line-height: 0;

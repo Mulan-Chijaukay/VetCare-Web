@@ -8,7 +8,6 @@
     --vet-gris-input: #f0f0f0;
 }
 
-/* --- CONTENEDOR --- */
 .login-wrapper {
     display: flex;
     justify-content: center;
@@ -27,7 +26,6 @@
     overflow: hidden;
 }
 
-/* --- FLUJO DE FORMULARIOS --- */
 .form-box {
     position: absolute;
     top: 0;
@@ -40,19 +38,17 @@
     padding: 0 60px;
 }
 
-/* Login está a la DERECHA inicialmente */
 .login-container {
     right: 0;
     z-index: 2;
 }
-/* Registro está a la IZQUIERDA inicialmente */
+
 .register-container {
     left: 0;
     opacity: 0;
     z-index: 1;
 }
 
-/* ANIMACIÓN: El panel naranja se mueve a la DERECHA */
 .main-auth-container.active .login-container {
     transform: translateX(-100%);
     opacity: 0;
@@ -64,11 +60,10 @@
     z-index: 5;
 }
 
-/* --- PANEL NARANJA (OVERLAY) --- */
 .overlay-container {
     position: absolute;
     top: 0;
-    left: 0; /* Inicia a la izquierda */
+    left: 0; 
     width: 50%;
     height: 100%;
     overflow: hidden;
@@ -76,7 +71,6 @@
     z-index: 100;
 }
 
-/* Se mueve a la derecha al registrarse */
 .main-auth-container.active .overlay-container {
     transform: translateX(100%);
 }
@@ -89,20 +83,19 @@
     position: relative;
     left: 0;
     transition: transform 0.6s ease-in-out;
-    border-radius: 0 200px 150px 0; /* Curva Figma Login */
+    border-radius: 0 200px 150px 0; 
 }
 
 .main-auth-container.active .overlay {
     transform: translateX(-50%);
-    border-radius: 200px 0 0 150px; /* Curva Figma Registro */
+    border-radius: 200px 0 0 150px; 
 }
 
-/* --- INPUTS CON ICONOS --- */
 .input-group-figma {
     background-color: var(--vet-gris-input);
     border-radius: 15px;
     display: flex;
-    flex-direction: row-reverse; /* Icono a la derecha */
+    flex-direction: row-reverse; 
     align-items: center;
     padding: 12px 20px;
     margin-bottom: 20px;

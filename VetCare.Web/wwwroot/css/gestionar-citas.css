@@ -1,9 +1,9 @@
-﻿/* Botón de Retorno Circular Premium */
+﻿
 .btn-back-circle {
     width: 48px;
     height: 48px;
     background-color: #ffffff;
-    color: #2c8a93; /* Turquesa institucional VetCare */
+    color: #2c8a93; 
     border-radius: 50%;
     display: flex;
     align-items: center;
@@ -11,17 +11,17 @@
     text-decoration: none;
     font-size: 1.4rem;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Sombra suave para profundidad */
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
     transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     cursor: pointer;
-    margin-right: 15px; /* Espacio para que no choque con el título */
+    margin-right: 15px; 
 }
 
     /* Efecto de Interacción (Hover) */
     .btn-back-circle:hover {
         background-color: #2c8a93;
         color: #ffffff;
-        transform: translateX(-5px); /* Desplazamiento lateral sutil hacia la izquierda */
+        transform: translateX(-5px); 
         box-shadow: 0 6px 16px rgba(44, 138, 147, 0.2);
         border-color: #2c8a93;
     }
@@ -33,7 +33,7 @@
     }
 
 
-/* Contenedor principal (mantenemos el fondo claro como pediste) */
+/* Contenedor principal */
 .page-container {
     background-color: #ffffff !important;
     padding: 2rem;
@@ -41,26 +41,22 @@
 
 
 
-/* DISEÑO VIBRANTE PARA LAS CARDS */
+/* DISEÑO PARA LAS CARDS */
 .admin-appointment-card, .card.border-0 {
-    /* Un azul acero más claro y vibrante que el anterior */
     background: linear-gradient(145deg, #3b4b6b, #2d3a54) !important;
     border: 1px solid rgba(255, 255, 255, 0.1) !important;
     border-radius: 20px;
     padding: 1.5rem;
-    /* Sombra más suave y extendida para que "flote" */
     box-shadow: 0 12px 20px rgba(0, 0, 0, 0.1) !important;
     transition: all 0.3s ease;
 }
 
-    /* Efecto Hover para dar dinamismo */
     .admin-appointment-card:hover, .card.border-0:hover {
         background: linear-gradient(145deg, #44567a, #354463) !important;
         transform: translateY(-5px);
         box-shadow: 0 15px 30px rgba(59, 75, 107, 0.2) !important;
     }
 
-    /* Títulos en Blanco Puro con mayor grosor */
     .admin-appointment-card h5,
     .admin-appointment-card .fw-bold,
     .card.border-0 h5,
@@ -69,23 +65,21 @@
         text-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
 
-    /* Subtítulos en un celeste cristalino */
+
     .admin-appointment-card .text-muted,
     .card.border-0 .text-muted {
-        color: #d1d5db !important; /* Gris perla muy claro */
+        color: #d1d5db !important; 
         font-weight: 500;
     }
 
 
 
-/* Fondo del icono más brillante */
 .bg-light.p-3 {
     background-color: rgba(255, 255, 255, 0.15) !important;
-    color: #57C0C2 !important; /* Turquesa vibrante */
+    color: #57C0C2 !important;
     backdrop-filter: blur(5px);
 }
 
-/* Línea divisoria más visible pero elegante */
 .border-top {
     border-top: 1px solid rgba(255, 255, 255, 0.15) !important;
     margin-top: 15px !important;

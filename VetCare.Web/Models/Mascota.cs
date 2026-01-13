@@ -7,8 +7,6 @@
         public string Raza { get; set; }
         public string Especie { get; set; }
 
-        // Relación: Cada mascota tiene un dueño (Usuario)
-        
         public string UsuarioId { get; set; } 
         public Usuario? Dueno { get; set; }
     }

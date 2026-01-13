@@ -1,0 +1,96 @@
+﻿@model IEnumerable<VetCare.Web.Models.Veterinario>
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Equipo Médico";
+}
+
+<div class="container-fluid py-4 px-2 px-lg-5">
+    <div class="d-flex justify-content-between align-items-center mb-5">
+        <div>
+            <h2 class="fw-bold text-dark m-0">@ViewData["Title"]</h2>
+            <p class="text-muted m-0">Personal de la clínica <span class="fw-bold text-info">VetCare</span>.</p>
+        </div>
+        
+        <button class="btn btn-primary rounded-pill px-4 shadow-sm fw-bold" data-bs-toggle="modal" data-bs-target="#modalRegistro">
+            <i class="bi bi-plus-lg me-2"></i> Nuevo Médico
+        </button>
+    </div>
+
+    @if (TempData["Mensaje"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show rounded-4 shadow-sm border-0 mb-4" role="alert">
+            <i class="bi bi-shield-check-fill me-2"></i> @TempData["Mensaje"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <div class="row g-4">
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var v in Model)
+            {
+                <div class="col-md-6 col-xl-4">
+                    <div class="card vet-card border-0 shadow-sm rounded-4 p-3 h-100 @(v.EstaActivo ? "" : "opacity-75 bg-light")">
+                        <div class="card-body p-2">
+                            <div class="d-flex align-items-center mb-3">
+                                <div class="icon-box-vet me-3 shadow-sm bg-white text-primary rounded-3 p-3" style="background: var(--accent-vibrant) !important; color: white !important;">
+                                    <i class="bi bi-person-vcard-fill fs-3"></i>
+                                </div>
+                                <div class="overflow-hidden">
+                                    <h5 class="fw-bold mb-1 text-dark">@v.Nombre</h5>
+                                    <span class="badge rounded-pill bg-info bg-opacity-10 text-info px-3 border border-info border-opacity-25">
+                                        @v.Especialidad
+                                    </span>
+                                </div>
+                            </div>
+
+                            <div class="bg-white bg-opacity-50 rounded-3 p-2 mb-3 border border-dashed text-muted" style="font-size: 0.85rem;">
+                                <div><strong>User:</strong> @(v.Nombre.Replace(" ", "").ToLower())@("@")vetcare.com</div>
+                                <div><strong>Pass:</strong> VetCare2026*</div>
+                            </div>
+
+                            <div class="d-flex justify-content-between align-items-center">
+                                <span class="badge @(v.EstaActivo ? "bg-success-subtle text-success" : "bg-danger-subtle text-danger") border rounded-pill px-3">
+                                    @(v.EstaActivo ? "Activo" : "Inactivo")
+                                </span>
+                                <form asp-action="CambiarEstadoVeterinario" method="post">
+                                    <input type="hidden" name="id" value="@v.Id" />
+                                    <button type="submit" class="btn btn-sm @(v.EstaActivo ? "btn-outline-danger" : "btn-outline-success") rounded-pill">
+                                        @(v.EstaActivo ? "Inhabilitar" : "Habilitar")
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+
+<div class="modal fade" id="modalRegistro" tabindex="-1" aria-labelledby="modalRegistroLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 p-4 pb-0">
+                <h5 class="fw-bold" id="modalRegistroLabel">Registrar Nuevo Médico</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-controller="Admin" asp-action="RegistrarVeterinario" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Nombre Completo</label>
+                        <input type="text" name="nombre" class="form-control bg-light border-0 p-3" placeholder="Ej: Dr. Alejandro Cáceres" required />
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small">Especialidad</label>
+                        <input type="text" name="especialidad" class="form-control bg-light border-0 p-3" placeholder="Ej: Cirugía" required />
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="submit" class="btn btn-primary w-100 py-3 fw-bold rounded-3 shadow">Guardar y Crear Acceso</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

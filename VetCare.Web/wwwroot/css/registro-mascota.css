@@ -1,13 +1,12 @@
-﻿/* Contenedor Maestro: Ocupa el 100% del espacio del dashboard */
+﻿
 .full-split-wrapper {
-    margin: -3rem !important; /* Anula el padding del layout cliente */
+    margin: -3rem !important;
     display: flex;
-    height: calc(100vh - 75px); /* Ajuste exacto bajo el header */
+    height: calc(100vh - 75px); 
     overflow: hidden;
-    background-color: #f8fafc; /* Gris ultra claro para dar contraste */
+    background-color: #f8fafc; 
 }
 
-/* Sección de Imagen: Enfoque Nítido y Centrado en los Protagonistas */
 .expert-image-side {
     flex: 1.2;
     position: relative;
@@ -17,11 +16,11 @@
     .expert-image-side img {
         width: 100%;
         height: 100%;
-        object-fit: cover; /* Evita que la imagen se estire o se vea borrosa */
+        object-fit: cover;
         /* AJUSTE: 14% desplaza la imagen para centrar a la niña y al perro */
         object-position: 14% center;
         filter: contrast(1.1) brightness(1.05);
-        image-rendering: -webkit-optimize-contrast; /* Truco de experto para máxima nitidez en navegadores */
+        image-rendering: -webkit-optimize-contrast; 
         image-rendering: crisp-edges;
     }
 
@@ -35,7 +34,7 @@
     color: white;
 }
 
-/* Sección de Formulario: Diseño Premium con Jerarquía Visual */
+/* Sección de Formulario */
 .expert-form-side {
     flex: 1;
     display: flex;
@@ -44,30 +43,29 @@
     justify-content: center;
     padding: 2rem 5rem;
     background: white;
-    box-shadow: -10px 0 30px rgba(0,0,0,0.05); /* Sombra para separar de la imagen */
+    box-shadow: -10px 0 30px rgba(0,0,0,0.05); 
 }
 
 .form-header-group {
     width: 100%;
     max-width: 420px;
-    margin-bottom: 3.5rem; /* Texto más arriba para mejor balance */
+    margin-bottom: 3.5rem; 
 }
 
 .title-vetcare {
-    color: #2c8a93; /* Turquesa VetCare */
+    color: #2c8a93; 
     font-size: 2.8rem;
     font-weight: 800;
     line-height: 1;
     margin-top: -20px;
 }
 
-/* INPUTS MÁS OSCUROS PARA RESALTAR */
 .input-premium {
-    border: 2px solid #cbd5e1 !important; /* Borde más oscuro */
-    background-color: #e2e8f0 !important; /* Fondo gris oscuro para contraste */
+    border: 2px solid #cbd5e1 !important;
+    background-color: #e2e8f0 !important; 
     border-radius: 15px !important;
     padding: 16px 20px !important;
-    color: #1e293b !important; /* Texto interno oscuro */
+    color: #1e293b !important; 
     transition: all 0.3s ease;
 }
 
@@ -77,9 +75,9 @@
         box-shadow: 0 10px 25px rgba(44, 138, 147, 0.2) !important;
     }
 
-/* Botón Finalizar con Hover Dinámico */
+
 .btn-finalizar-expert {
-    background: #ff9d42 !important; /* Naranja VetCare */
+    background: #ff9d42 !important;
     color: white !important;
     border: none !important;
     border-radius: 15px !important;

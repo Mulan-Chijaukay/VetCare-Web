@@ -68,4 +68,50 @@ app.MapRazorPages();
 
 
 
+
+
+// nota: bloque para inicializar roles y usuario Admin
+using (var scope = app.Services.CreateScope())
+{
+    var serviceProvider = scope.ServiceProvider;
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+    var userManager = serviceProvider.GetRequiredService<UserManager<Usuario>>();
+
+    string[] roleNames = { "Admin", "Veterinario", "Cliente" };
+
+    foreach (var roleName in roleNames)
+    {
+        if (!await roleManager.RoleExistsAsync(roleName))
+        {
+            await roleManager.CreateAsync(new IdentityRole(roleName));
+        }
+    }
+
+    //nota: esto lo q hace es crear el Admin si no existe
+    var adminEmail = "admin@vetcare.com";
+    var adminUser = await userManager.FindByEmailAsync(adminEmail);
+
+    if (adminUser == null)
+    {
+        var newAdmin = new Usuario
+        {
+            UserName = adminEmail,
+            Email = adminEmail,
+            Nombre = "Administrador Principal",
+            Rol = "Admin",
+            EmailConfirmed = true
+        };
+
+        var result = await userManager.CreateAsync(newAdmin, "Admin123!");
+        if (result.Succeeded)
+        {
+            await userManager.AddToRoleAsync(newAdmin, "Admin");
+        }
+    }
+}
+
+
+
+
+
 app.Run();
