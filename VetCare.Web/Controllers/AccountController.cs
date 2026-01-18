@@ -61,11 +61,20 @@ namespace VetCare.Web.Controllers
             {
                 var usuario = await _userManager.FindByEmailAsync(Email);
 
+                // --- LÓGICA DE REDIRECCIÓN POR ROL ---
+
                 if (usuario.Rol == "Admin")
                 {
                     return RedirectToAction("Dashboard", "Admin");
                 }
 
+                // AGREGADO: Redirección para el Veterinario
+                if (usuario.Rol == "Veterinario")
+                {
+                    return RedirectToAction("Inicio", "Veterinario");
+                }
+
+                // Por defecto, si no es ninguno de los anteriores, va al Cliente
                 return RedirectToAction("Inicio", "Cliente");
             }
 

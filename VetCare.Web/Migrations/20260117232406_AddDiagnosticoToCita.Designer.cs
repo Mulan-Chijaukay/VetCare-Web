@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VetCare.Web.Data;
 
@@ -11,9 +12,11 @@ using VetCare.Web.Data;
 namespace VetCare.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260117232406_AddDiagnosticoToCita")]
+    partial class AddDiagnosticoToCita
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -217,9 +220,6 @@ namespace VetCare.Web.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
-                    b.Property<string>("DuenoId")
-                        .HasColumnType("nvarchar(450)");
-
                     b.Property<string>("Especie")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -237,8 +237,6 @@ namespace VetCare.Web.Migrations
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("DuenoId");
 
                     b.HasIndex("UsuarioId");
 
@@ -417,17 +415,11 @@ namespace VetCare.Web.Migrations
                 {
                     b.HasOne("VetCare.Web.Models.Usuario", "Dueno")
                         .WithMany()
-                        .HasForeignKey("DuenoId");
-
-                    b.HasOne("VetCare.Web.Models.Usuario", "Usuario")
-                        .WithMany()
                         .HasForeignKey("UsuarioId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Dueno");
-
-                    b.Navigation("Usuario");
                 });
 #pragma warning restore 612, 618
         }

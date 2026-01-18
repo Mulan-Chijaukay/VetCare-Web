@@ -1,0 +1,109 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - VetCare Especialista</title>
+
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+    @* Reutilizamos el CSS de Admin para mantener la estructura de Sidebar *@
+    <link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
+
+    <style>
+        :root {
+            --vet-primary: #2c8a93;
+            --vet-dark: #1a4d52;
+        }
+
+        #sidebar {
+            background: #111b27;
+        }
+
+        .nav-admin-link.active i {
+            color: #5bc0de !important;
+        }
+
+        .user-profile {
+            border-left: 4px solid #5bc0de;
+        }
+    </style>
+
+    @await RenderSectionAsync("Styles", required: false)
+</head>
+<body>
+    <div class="admin-container">
+        <nav id="sidebar">
+            <div class="p-4 border-bottom border-secondary border-opacity-25 mb-3">
+                <h4 class="fw-bold m-0 text-white d-flex align-items-center">
+                    <i class="bi bi-heart-pulse-fill me-2 text-info"></i>
+                    <span class="nav-text">VetCare <small class="fs-6 opacity-50">Med</small></span>
+                </h4>
+            </div>
+
+            <div class="flex-grow-1 nav flex-column">
+                <a asp-controller="Veterinario" asp-action="Inicio"
+                   class="nav-admin-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "Inicio" ? "active" : "")">
+                    <i class="bi bi-calendar2-week-fill me-3"></i>
+                    <span class="nav-text">Mi Agenda</span>
+                </a>
+
+                <a asp-controller="Veterinario" asp-action="HistorialPacientes"
+                   class="nav-admin-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "HistorialPacientes" ? "active" : "")">
+                    <i class="bi bi-file-earmark-medical-fill me-3"></i>
+                    <span class="nav-text">Historial Pacientes</span>
+                </a>
+
+                <a asp-controller="Veterinario" asp-action="ConsultasFinalizadas"
+                   class="nav-admin-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "ConsultasFinalizadas" ? "active" : "")">
+                    <i class="bi bi-check-circle-fill me-3"></i>
+                    <span class="nav-text">Mis Consultas</span>
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    @Html.AntiForgeryToken()
+                    <button type="submit" class="btn-logout border-0 bg-transparent text-start w-100 d-flex align-items-center">
+                        <i class="bi bi-box-arrow-left me-3 fs-5"></i>
+                        <span class="nav-text">Cerrar Sesión</span>
+                    </button>
+                </form>
+            </div>
+        </nav>
+
+        <div class="d-flex flex-column w-100">
+            <header class="premium-header bg-white shadow-sm">
+                <div class="d-flex align-items-center">
+                    <button id="toggleBtn" class="btn btn-light border-0 me-4">
+                        <i class="bi bi-list fs-4"></i>
+                    </button>
+                    <h5 class="fw-bold text-dark m-0">@ViewData["Title"]</h5>
+                </div>
+
+                <div class="user-profile d-flex align-items-center bg-light rounded-pill px-3 py-1">
+                    <div class="me-3 text-end d-none d-sm-block">
+                        <p class="m-0 small fw-bold text-dark">Dr. @User.Identity.Name</p>
+                        <span class="badge bg-info-subtle text-info border border-info-subtle" style="font-size: 0.65rem;">ESPECIALISTA</span>
+                    </div>
+                    <div class="bg-info text-white rounded-circle d-flex align-items-center justify-content-center" style="width: 38px; height: 38px;">
+                        <i class="bi bi-person-badge fs-5"></i>
+                    </div>
+                </div>
+            </header>
+
+            <main class="p-4" style="background-color: #f8fafc; flex: 1; overflow-y: auto;">
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    @* Reutilizamos el script de acciones del admin para el toggle del sidebar *@
+    <script src="~/js/admin-actions.js" asp-append-version="true"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

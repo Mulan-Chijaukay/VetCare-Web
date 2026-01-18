@@ -1,4 +1,6 @@
-﻿namespace VetCare.Web.Models
+﻿using System.ComponentModel.DataAnnotations.Schema;
+
+namespace VetCare.Web.Models
 {
     public class Mascota
     {
@@ -7,7 +9,11 @@
         public string Raza { get; set; }
         public string Especie { get; set; }
 
-        public string UsuarioId { get; set; } 
+       
+        public string UsuarioId { get; set; }
+
+        [ForeignKey("UsuarioId")]
+        public virtual Usuario? Usuario { get; set; } 
         public Usuario? Dueno { get; set; }
     }
 }

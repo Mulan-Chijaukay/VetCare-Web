@@ -35,6 +35,8 @@ namespace VetCare.Web.Models
 
         public int? VeterinarioId { get; set; } // FK hacia la tabla Veterinarios
 
+        public string? Diagnostico { get; set; } // Nuevo campo para las notas médicas
+
         [ForeignKey("VeterinarioId")]
         public virtual Veterinario? Veterinario { get; set; } 
         public string? NombreVeterinario { get; set; }

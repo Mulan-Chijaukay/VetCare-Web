@@ -1,0 +1,223 @@
+﻿@model IEnumerable<VetCare.Web.Models.Cita>
+
+@{
+    Layout = "_LayoutVeterinario";
+    ViewData["Title"] = "Agenda";
+    DateTime fechaActual = ViewBag.FechaActual;
+    string vista = ViewBag.Vista;
+    var horasInicio = 8;
+    var horasFin = 20;
+    int salto = (vista == "Semana") ? 7 : 1;
+    // Reducimos la altura por hora para abarcar más espacio sin scroll
+    int alturaPorHora = 60;
+}
+
+<div class="container-fluid py-3">
+    <div class="card border-0 shadow-sm rounded-4 overflow-hidden">
+
+        <div class="bg-white border-bottom p-3 d-flex justify-content-between align-items-center">
+            <div class="d-flex align-items-center">
+                <div class="btn-group border rounded-3 me-3 shadow-sm bg-white">
+                    @* Flecha Izquierda: Resta el 'salto' (1 o 7) *@
+                    <a asp-action="Inicio"
+                       asp-route-fecha="@fechaActual.AddDays(-salto).ToString("yyyy-MM-dd")"
+                       asp-route-vista="@vista"
+                       class="btn btn-light border-end px-3">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+
+                    @* Botón Hoy: Siempre vuelve a la fecha de hoy manteniendo la vista *@
+                    <a asp-action="Inicio"
+                       asp-route-fecha="@DateTime.Today.ToString("yyyy-MM-dd")"
+                       asp-route-vista="@vista"
+                       class="btn btn-light fw-bold px-3">Hoy</a>
+
+                    @* Flecha Derecha: Suma el 'salto' (1 o 7) *@
+                    <a asp-action="Inicio"
+                       asp-route-fecha="@fechaActual.AddDays(salto).ToString("yyyy-MM-dd")"
+                       asp-route-vista="@vista"
+                       class="btn btn-light border-start px-3">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+                <h4 class="fw-bold m-0 text-dark">
+                    @if (vista == "Semana")
+                    {
+                        <span class="text-info text-uppercase fs-6 d-block" style="letter-spacing: 1px;">Semana del</span>
+                        <span>@(((DateTime)ViewBag.InicioSemana).ToString("dd MMM")) - @(((DateTime)ViewBag.InicioSemana).AddDays(6).ToString("dd MMM yyyy"))</span>
+                    }
+                    else
+                    {
+                        <span class="text-info text-uppercase fs-6 d-block" style="letter-spacing: 1px;">Agenda del día</span>
+                        <span>@fechaActual.ToString("dddd, dd MMMM yyyy")</span>
+                    }
+                </h4>
+            </div>
+
+            <div class="btn-group shadow-sm">
+                <a asp-action="Inicio" asp-route-fecha="@fechaActual" asp-route-vista="Dia" class="btn btn-outline-info @(vista == "Dia" ? "active" : "") px-4">Día</a>
+                <a asp-action="Inicio" asp-route-fecha="@fechaActual" asp-route-vista="Semana" class="btn btn-outline-info @(vista == "Semana" ? "active" : "") px-4">Semana</a>
+            </div>
+        </div>
+
+        <div class="calendar-main bg-white">
+            @if (vista == "Semana")
+            {
+                <div class="d-flex border-bottom bg-light">
+                    <div style="width: 70px;" class="border-end"></div> <div class="d-flex flex-grow-1">
+                        @for (int i = 0; i < 7; i++)
+                        {
+                            var diaCol = ((DateTime)ViewBag.InicioSemana).AddDays(i);
+                            bool esHoy = diaCol.Date == DateTime.Today;
+                            <div class="flex-grow-1 text-center py-2 border-end @(esHoy ? "bg-info bg-opacity-10" : "")" style="width: 14.28%;">
+                                <div class="small text-uppercase @(esHoy ? "text-info fw-bold" : "text-muted")">@diaCol.ToString("ddd")</div>
+                                <div class="fs-5 fw-bold @(esHoy ? "text-info" : "")">@diaCol.Day</div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            }
+
+            <div class="calendar-scroll-area position-relative" style="height: calc(100vh - 250px); overflow-y: auto;">
+                <div class="d-flex">
+                    <div class="time-column border-end bg-light" style="width: 70px; flex-shrink: 0;">
+                        @for (int h = horasInicio; h <= horasFin; h++)
+                        {
+                            <div class="hour-cell border-bottom text-center text-muted d-flex align-items-center justify-content-center"
+                                 style="height: @(alturaPorHora)px; font-size: 0.75rem;">
+                                @(h > 12 ? (h - 12) + " PM" : h + (h == 12 ? " PM" : " AM"))
+                            </div>
+                        }
+                    </div>
+
+                    <div class="days-grid d-flex flex-grow-1 position-relative">
+                        @{
+                            int numCols = (vista == "Semana") ? 7 : 1;
+                        }
+                        @for (int i = 0; i < numCols; i++)
+                        {
+                            var diaCol = (vista == "Semana") ? ((DateTime)ViewBag.InicioSemana).AddDays(i) : fechaActual;
+                            <div class="day-column border-end position-relative flex-grow-1" style="width: @(100 / numCols)%;">
+                                @* Líneas de fondo *@
+                                @for (int h = horasInicio; h <= horasFin; h++)
+                                {
+                                    <div class="grid-line border-bottom" style="height: @(alturaPorHora)px;"></div>
+                                }
+
+                                @* Citas *@
+                                @foreach (var cita in Model.Where(c => c.Fecha.Date == diaCol.Date))
+                                {
+                                    var hP = cita.Horario.Split(':');
+                                    int h = int.Parse(hP[0]);
+                                    int m = int.Parse(hP[1].Split(' ')[0]);
+                                    if (cita.Horario.Contains("PM") && h != 12) h += 12;
+
+                                    var top = (h - horasInicio) * alturaPorHora + (m * alturaPorHora / 60);
+
+                                    <div class="appointment-card position-absolute rounded-3 shadow p-2 bg-dark text-white border-start border-4 border-info"
+                                         style="top: @(top)px; left: 4px; right: 4px; height: @(alturaPorHora + 20)px; z-index: 10; transition: 0.2s;">
+
+                                        <div class="d-flex justify-content-between align-items-start h-100 flex-column" onclick="Swal.fire('Detalle Cita', 'Mascota: @cita.Mascota?.Nombre\nDueño: @cita.Mascota?.Usuario?.Nombre', 'info')">
+                                            <div class="w-100">
+                                                <div class="fw-bold text-info text-truncate" style="font-size: 0.85rem;">@cita.Mascota?.Nombre</div>
+                                                <div class="text-white-50 small" style="font-size: 0.7rem;">@cita.Horario</div>
+                                            </div>
+
+                                            @* BOTÓN DE ATENDER: Aquí es donde estaba el lío *@
+                                            <div class="d-flex justify-content-between align-items-center w-100 mt-1">
+                                                <span class="small text-truncate opacity-75" style="font-size: 0.6rem; max-width: 60%;">
+                                                    @cita.Mascota?.Usuario?.Nombre
+                                                </span>
+                                                <button type="button" class="btn btn-success btn-xs py-0 px-2 fw-bold"
+                                                        style="font-size: 0.65rem; height: 18px;"
+                                                        onclick="event.stopPropagation(); abrirAtencion(@cita.Id, '@cita.Mascota?.Nombre')">
+                                                    ATENDER
+                                                </button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="modalAtencion" tabindex="-1" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-dark text-white border-0 shadow-lg rounded-4">
+            <div class="modal-header border-secondary border-opacity-25">
+                <h5 class="modal-title fw-bold text-info">
+                    <i class="bi bi-stethoscope me-2"></i> Atender a <span id="nombreMascotaModal"></span>
+                </h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="FinalizarConsulta" method="post">
+                <div class="modal-body p-4">
+                    <input type="hidden" name="citaId" id="citaIdModal" />
+
+                    <div class="mb-3">
+                        <label class="form-label text-white-50 small fw-bold">DIAGNÓSTICO MÉDICO</label>
+                        <textarea name="diagnostico" class="form-control bg-secondary bg-opacity-10 border-secondary text-white rounded-3"
+                                  rows="3" placeholder="Describe los síntomas y hallazgos..." required></textarea>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label text-white-50 small fw-bold">TRATAMIENTO / RECETA</label>
+                        <textarea name="tratamiento" class="form-control bg-secondary bg-opacity-10 border-secondary text-white rounded-3"
+                                  rows="2" placeholder="Medicinas o indicaciones..."></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 pb-4 px-4">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Cancelar</button>
+                    <button type="submit" class="btn btn-info rounded-pill px-4 fw-bold">Guardar y Finalizar</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Styles {
+    <style>
+        .calendar-scroll-area::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .calendar-scroll-area::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 10px;
+        }
+
+        .appointment-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3) !important;
+            background: #212529 !important;
+        }
+
+        .grid-line:last-child {
+            border-bottom: none !important;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        function verFicha(id) {
+            // Aquí luego haremos que se abra la historia clínica
+            Swal.fire('Ficha Médica', 'Cargando datos de la mascota...', 'info');
+        }
+    </script>
+
+
+    <script>
+        function abrirAtencion(id, nombre) {
+            document.getElementById('citaIdModal').value = id;
+            document.getElementById('nombreMascotaModal').innerText = nombre;
+            var myModal = new bootstrap.Modal(document.getElementById('modalAtencion'));
+            myModal.show();
+        }
+    </script>
+}
