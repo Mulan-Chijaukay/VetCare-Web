@@ -7,7 +7,7 @@ public class Veterinario
 
     [Required]
     public string Nombre { get; set; }
-
+    public string NombreCompleto => Nombre;
     public string Especialidad { get; set; }
 
     public string? UsuarioId { get; set; }

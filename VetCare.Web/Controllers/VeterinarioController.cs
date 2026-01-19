@@ -54,35 +54,118 @@ namespace VetCare.Web.Controllers
         }
 
         // GET: Veterinario/HistorialPacientes
-        public async Task<IActionResult> HistorialPacientes()
+        public async Task<IActionResult> HistorialPacientes(string searchString)
         {
             var userId = _userManager.GetUserId(User);
 
-            // Muestra las citas que este médico ya completó
-            var historial = await _context.Citas
-                .Include(c => c.Mascota)
-                .Where(c => c.Veterinario.UsuarioId == userId && c.Estado == "Completada")
-                .OrderByDescending(c => c.Fecha)
-                .ToListAsync();
+            // Consultamos la tabla de HistoriasClinicas que acabamos de crear
+            var query = _context.HistoriasClinicas
+                .Include(h => h.Mascota)
+                    .ThenInclude(m => m.Usuario)
+                .AsQueryable();
 
+            // Filtro de búsqueda por nombre de mascota o dueño
+            if (!string.IsNullOrEmpty(searchString))
+            {
+                query = query.Where(h => h.Mascota.Nombre.Contains(searchString) ||
+                                         h.Mascota.Usuario.Nombre.Contains(searchString));
+            }
+
+            var historial = await query.OrderByDescending(h => h.FechaAtencion).ToListAsync();
             return View(historial);
         }
+
+
+
+
+
 
         // POST: Veterinario/FinalizarConsulta
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> FinalizarConsulta(int citaId, string diagnostico)
+        public async Task<IActionResult> FinalizarConsulta(int citaId, string diagnostico, string tratamiento)
         {
-            var cita = await _context.Citas.FindAsync(citaId);
-            if (cita != null)
+            // Obtenemos el ID del veterinario actual para seguridad
+            var userId = _userManager.GetUserId(User);
+
+            // 1. Buscamos la cita incluyendo las relaciones necesarias
+            var cita = await _context.Citas
+                .Include(c => c.Mascota)
+                .Include(c => c.Veterinario)
+                .FirstOrDefaultAsync(c => c.Id == citaId);
+
+            if (cita == null) return NotFound();
+
+            // --- VALIDACIÓN DE SEGURIDAD Y DUPLICADOS ---
+            // Verificamos que la cita le pertenezca a este veterinario
+            if (cita.Veterinario?.UsuarioId != userId)
             {
-                cita.Estado = "Completada";
-                // Aquí podrías agregar un campo 'Diagnostico' a tu tabla Citas si lo deseas
-                _context.Update(cita);
-                await _context.SaveChangesAsync();
-                TempData["Mensaje"] = "Consulta finalizada con éxito.";
+                TempData["Error"] = "No tienes permiso para finalizar esta consulta.";
+                return RedirectToAction(nameof(Inicio));
             }
+
+            // Verificamos si ya está completada para no duplicar historia clínica
+            if (cita.Estado == "Completada")
+            {
+                TempData["Mensaje"] = "Esta consulta ya fue registrada anteriormente.";
+                return RedirectToAction(nameof(Inicio));
+            }
+            // --------------------------------------------
+
+            // 2. Creamos el registro en la Historia Clínica
+            var entradaHistoria = new HistoriaClinica
+            {
+                MascotaId = cita.MascotaId,
+                FechaAtencion = DateTime.Now,
+                Diagnostico = diagnostico,
+                Tratamiento = tratamiento,
+                VeterinarioNombre = cita.Veterinario?.NombreCompleto ?? "Veterinario",
+                CitaId = cita.Id
+            };
+
+            // 3. Actualizamos el estado de la cita
+            cita.Estado = "Completada";
+            cita.Diagnostico = diagnostico;
+            cita.Tratamiento = tratamiento; // Asegúrate de que Cita tenga este campo también
+
+            try
+            {
+                _context.HistoriasClinicas.Add(entradaHistoria);
+                _context.Citas.Update(cita);
+                await _context.SaveChangesAsync();
+
+                TempData["Mensaje"] = "Consulta finalizada. Se ha generado un nuevo registro en la Historia Clínica.";
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = "Hubo un error al guardar en la base de datos.";
+            }
+
             return RedirectToAction(nameof(Inicio));
         }
+
+
+
+
+
+        public async Task<IActionResult> DetallePaciente(int id)
+        {
+            var mascota = await _context.Mascotas
+                .Include(m => m.Usuario) // Dueño
+                .Include(m => m.HistoriasClinicas.OrderByDescending(h => h.FechaAtencion))
+                .FirstOrDefaultAsync(m => m.Id == id);
+
+            if (mascota == null) return NotFound();
+
+            return View(mascota);
+        }
+
+
+
+
+
+
+
+
     }
 }

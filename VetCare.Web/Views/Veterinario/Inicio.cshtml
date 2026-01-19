@@ -123,16 +123,32 @@
                                                 <div class="text-white-50 small" style="font-size: 0.7rem;">@cita.Horario</div>
                                             </div>
 
-                                            @* BOTÓN DE ATENDER: Aquí es donde estaba el lío *@
+                                            @* BOTÓN DE ATENDER: Solo visible si no está completada y es para hoy *@
                                             <div class="d-flex justify-content-between align-items-center w-100 mt-1">
                                                 <span class="small text-truncate opacity-75" style="font-size: 0.6rem; max-width: 60%;">
                                                     @cita.Mascota?.Usuario?.Nombre
                                                 </span>
-                                                <button type="button" class="btn btn-success btn-xs py-0 px-2 fw-bold"
-                                                        style="font-size: 0.65rem; height: 18px;"
-                                                        onclick="event.stopPropagation(); abrirAtencion(@cita.Id, '@cita.Mascota?.Nombre')">
-                                                    ATENDER
-                                                </button>
+
+                                                @if (cita.Estado == "Completada")
+                                                {
+                                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-25 px-2" style="font-size: 0.6rem;">
+                                                        <i class="bi bi-check-circle-fill"></i> ATENDIDO
+                                                    </span>
+                                                }
+                                                else if (cita.Fecha.Date == DateTime.Today)
+                                                {
+                                                    <button type="button" class="btn btn-success btn-xs py-0 px-2 fw-bold"
+                                                            style="font-size: 0.65rem; height: 18px;"
+                                                            onclick="event.stopPropagation(); abrirAtencion(@cita.Id, '@cita.Mascota?.Nombre')">
+                                                        ATENDER
+                                                    </button>
+                                                }
+                                                else if (cita.Fecha.Date < DateTime.Today)
+                                                {
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-25 px-2" style="font-size: 0.6rem;">
+                                                        EXPIRADA
+                                                    </span>
+                                                }
                                             </div>
                                         </div>
                                     </div>
@@ -211,6 +227,20 @@
         }
     </script>
 
+    @if (TempData["Mensaje"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                Swal.fire({
+                    icon: 'success',
+                    title: '¡Éxito!',
+                    // Usamos Html.Raw para que los acentos se vean bien
+                    html: '@Html.Raw(TempData["Mensaje"])',
+                    confirmButtonColor: '#2c8a93'
+                });
+            });
+        </script>
+    }
 
     <script>
         function abrirAtencion(id, nombre) {
@@ -220,4 +250,8 @@
             myModal.show();
         }
     </script>
+
+    
+
+
 }

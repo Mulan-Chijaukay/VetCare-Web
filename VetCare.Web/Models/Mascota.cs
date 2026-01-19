@@ -15,5 +15,10 @@ namespace VetCare.Web.Models
         [ForeignKey("UsuarioId")]
         public virtual Usuario? Usuario { get; set; } 
         public Usuario? Dueno { get; set; }
+
+        
+        public virtual ICollection<HistoriaClinica> HistoriasClinicas { get; set; } = new List<HistoriaClinica>();
+        public int Edad { get; set; }
+        public string Sexo { get; set; }
     }
 }

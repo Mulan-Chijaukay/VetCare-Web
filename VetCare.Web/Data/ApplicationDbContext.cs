@@ -13,5 +13,6 @@ namespace VetCare.Web.Data
         public DbSet<Mascota> Mascotas { get; set; }
         public DbSet<Cita> Citas { get; set; }
         public DbSet<Veterinario> Veterinarios { get; set; }
+        public DbSet<HistoriaClinica> HistoriasClinicas { get; set; }
     }
 }
