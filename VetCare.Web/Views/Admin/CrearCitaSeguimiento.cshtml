@@ -1,0 +1,96 @@
+﻿@model VetCare.Web.Models.Cita
+@{
+    Layout = "_LayoutAdmin";
+    ViewData["Title"] = "Agendar Seguimiento";
+}
+
+<div class="container py-5">
+    <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="max-width: 1100px; margin: auto;">
+        <div class="row g-0 align-items-stretch">
+            @* align-items-stretch asegura que ambas columnas midan lo mismo *@
+
+            @* COLUMNA IZQUIERDA: IMAGEN *@
+            <div class="col-lg-6 d-none d-lg-block position-relative">
+                <img src="~/img/registromascota.jpg"
+                     class="img-fluid w-100 h-100"
+                     alt="Registro"
+                     style="object-fit: cover; position: absolute; top: 0; left: 0;">
+            </div>
+
+            @* COLUMNA DERECHA: FORMULARIO *@
+            <div class="col-lg-6 bg-white">
+                <div class="bg-dark p-4 text-white">
+                    <h4 class="m-0 fw-bold"><i class="bi bi-calendar-plus me-2 text-warning"></i>Agendar Seguimiento</h4>
+                </div>
+
+                <form asp-action="GuardarCitaSeguimiento" method="post" class="p-4 p-md-5">
+                    @* CAMPOS OCULTOS OBLIGATORIOS PARA LA BASE DE DATOS *@
+                    <input type="hidden" name="MascotaId" value="@ViewBag.MascotaId" />
+                    <input type="hidden" name="UsuarioId" value="@ViewBag.UsuarioId" /> @* <--- CORRIGE EL ERROR DE LA IMAGEN *@
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted small text-uppercase">Paciente</label>
+                        <div class="input-group">
+                            <span class="input-group-text bg-light border-0"><i class="bi bi-heart-pulse text-primary"></i></span>
+                            <input type="text" class="form-control bg-light border-0 fw-bold" value="@ViewBag.NombreMascota" readonly />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted small text-uppercase">Servicio</label>
+                        <select name="Servicio" class="form-select border-primary" required>
+                            <option value="Consulta General">Consulta General</option>
+                            <option value="Vacunación">Vacunación</option>
+                            <option value="Desparasitación">Desparasitación</option>
+                            <option value="Baño y Corte">Baño y Corte</option>
+                        </select>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-6 mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Fecha</label>
+                            <input type="date" name="Fecha" class="form-control border-primary" value="@ViewBag.FechaSugerida" required />
+                        </div>
+                        <div class="col-6 mb-4">
+                            <label class="form-label fw-bold text-muted small text-uppercase">Horario</label>
+                            <input type="text" name="Horario" class="form-control border-primary" placeholder="10:00 AM" required />
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted small text-uppercase">Médico</label>
+                        <select name="VeterinarioId" class="form-select border-primary" asp-items="ViewBag.Veterinarios" required>
+                            <option value="">-- Elegir Especialista --</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-4">
+                        <label class="form-label fw-bold text-muted small text-uppercase">Prioridad</label>
+                        <select name="Prioridad" class="form-select border-primary">
+                            <option value="Baja">Baja</option>
+                            <option value="Media" selected>Media</option>
+                            <option value="Alta">Alta (Urgente)</option>
+                        </select>
+                    </div>
+
+                    <div class="d-grid gap-3 pt-3">
+                        <button type="submit" class="btn btn-primary py-3 fw-bold rounded-pill shadow">
+                            <i class="bi bi-check-circle me-2"></i>CONFIRMAR Y AGENDAR
+                        </button>
+                        <a asp-action="PacientesPorVolver" class="btn btn-link text-muted py-0">Cancelar y volver</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+<style>
+    .object-fit-cover {
+        object-fit: cover;
+    }
+
+    .form-select:focus, .form-control:focus {
+        border-color: #0d6efd;
+        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
+    }
+</style>

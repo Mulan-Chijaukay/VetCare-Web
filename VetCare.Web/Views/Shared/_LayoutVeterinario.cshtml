@@ -14,6 +14,7 @@
         :root {
             --vet-primary: #2c8a93;
             --vet-dark: #1a4d52;
+            --accent-info: #5bc0de;
         }
 
         #sidebar {
@@ -21,11 +22,33 @@
         }
 
         .nav-admin-link.active i {
-            color: #5bc0de !important;
+            color: var(--accent-info) !important;
         }
 
         .user-profile {
-            border-left: 4px solid #5bc0de;
+            border-left: 4px solid var(--accent-info);
+        }
+
+        /* Efecto para el semáforo de urgencias en la agenda */
+        @@keyframes pulse-red {
+            0% {
+                transform: scale(0.95);
+                opacity: 0.7;
+            }
+
+            50% {
+                transform: scale(1.1);
+                opacity: 1;
+            }
+
+            100% {
+                transform: scale(0.95);
+                opacity: 0.7;
+            }
+        }
+
+        .pulse-effect {
+            animation: pulse-red 2s infinite;
         }
     </style>
 
@@ -54,11 +77,7 @@
                     <span class="nav-text">Historial Pacientes</span>
                 </a>
 
-                <a asp-controller="Veterinario" asp-action="ConsultasFinalizadas"
-                   class="nav-admin-link @(ViewContext.RouteData.Values["Action"]?.ToString() == "ConsultasFinalizadas" ? "active" : "")">
-                    <i class="bi bi-check-circle-fill me-3"></i>
-                    <span class="nav-text">Mis Consultas</span>
-                </a>
+               
             </div>
 
             <div class="sidebar-footer">
@@ -93,14 +112,13 @@
             </header>
 
             <main class="p-4" style="background-color: #f8fafc; flex: 1; overflow-y: auto;">
-                @RenderBody()
+                @RenderBody() @* AQUÍ SE CARGA TU AGENDA E HISTORIAL *@
             </main>
         </div>
     </div>
 
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
-    @* Reutilizamos el script de acciones del admin para el toggle del sidebar *@
     <script src="~/js/admin-actions.js" asp-append-version="true"></script>
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 

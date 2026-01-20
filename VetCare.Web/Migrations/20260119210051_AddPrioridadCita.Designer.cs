@@ -3,6 +3,7 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using VetCare.Web.Data;
 
@@ -11,9 +12,11 @@ using VetCare.Web.Data;
 namespace VetCare.Web.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260119210051_AddPrioridadCita")]
+    partial class AddPrioridadCita
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -237,9 +240,6 @@ namespace VetCare.Web.Migrations
                     b.Property<int>("MascotaId")
                         .HasColumnType("int");
 
-                    b.Property<DateTime?>("ProximaCitaSugerida")
-                        .HasColumnType("datetime2");
-
                     b.Property<string>("Tratamiento")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
@@ -249,8 +249,6 @@ namespace VetCare.Web.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("CitaId");
 
                     b.HasIndex("MascotaId");
 
@@ -465,17 +463,11 @@ namespace VetCare.Web.Migrations
 
             modelBuilder.Entity("VetCare.Web.Models.HistoriaClinica", b =>
                 {
-                    b.HasOne("VetCare.Web.Models.Cita", "Cita")
-                        .WithMany()
-                        .HasForeignKey("CitaId");
-
                     b.HasOne("VetCare.Web.Models.Mascota", "Mascota")
                         .WithMany("HistoriasClinicas")
                         .HasForeignKey("MascotaId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Cita");
 
                     b.Navigation("Mascota");
                 });

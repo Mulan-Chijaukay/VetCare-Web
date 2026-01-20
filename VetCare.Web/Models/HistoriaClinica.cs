@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace VetCare.Web.Models
 {
@@ -15,8 +16,12 @@ namespace VetCare.Web.Models
         public string Diagnostico { get; set; }
         public string Tratamiento { get; set; }
         public string VeterinarioNombre { get; set; } // Para saber quién lo atendió
+        public DateTime? ProximaCitaSugerida { get; set; }
 
-        // Opcional: Relación con la Cita que originó esta entrada
+       
         public int? CitaId { get; set; }
+
+        [ForeignKey("CitaId")]
+        public virtual Cita? Cita { get; set; }
     }
 }

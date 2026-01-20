@@ -61,6 +61,14 @@ public class AdminController : Controller
     [HttpPost]
     public async Task<IActionResult> EliminarCita(int id)
     {
+        // 1. Buscamos si la cita tiene historias clínicas asociadas
+        var historias = _context.HistoriasClinicas.Where(h => h.CitaId == id);
+        if (historias.Any())
+        {
+            _context.HistoriasClinicas.RemoveRange(historias);
+        }
+
+        // 2. Ahora sí borramos la cita
         var cita = await _context.Citas.FindAsync(id);
         if (cita != null)
         {
@@ -125,4 +133,70 @@ public class AdminController : Controller
         }
         return RedirectToAction(nameof(ListaVeterinarios));
     }
+
+
+    public async Task<IActionResult> PacientesPorVolver()
+    {
+        // Buscamos historias clínicas que tengan una fecha sugerida
+        var sugerencias = await _context.HistoriasClinicas
+            .Include(h => h.Mascota)
+                .ThenInclude(m => m.Usuario)
+            .Where(h => h.ProximaCitaSugerida != null)
+            .OrderBy(h => h.ProximaCitaSugerida)
+            .ToListAsync();
+
+        return View(sugerencias);
+    }
+    public async Task<IActionResult> PrepararCitaSeguimiento(int mascotaId, string fechaSugerida)
+    {
+        // Cargamos la mascota con su Usuario para obtener el ID del dueño
+        var mascota = await _context.Mascotas.Include(m => m.Usuario).FirstOrDefaultAsync(m => m.Id == mascotaId);
+        if (mascota == null) return RedirectToAction(nameof(PacientesPorVolver));
+
+        ViewBag.MascotaId = mascotaId;
+        ViewBag.NombreMascota = mascota.Nombre;
+        ViewBag.FechaSugerida = fechaSugerida;
+        ViewBag.UsuarioId = mascota.UsuarioId; // <--- DATO VITAL PARA EVITAR EL ERROR SQL
+
+        ViewBag.Veterinarios = new SelectList(await _context.Veterinarios.Where(v => v.EstaActivo).ToListAsync(), "Id", "Nombre");
+
+        return View("CrearCitaSeguimiento");
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> GuardarCitaSeguimiento(Cita cita)
+    {
+        // 1. Buscamos el médico en la BD usando el ID seleccionado en el formulario
+        var veterinario = await _context.Veterinarios.FindAsync(cita.VeterinarioId);
+
+        if (veterinario != null)
+        {
+            // ASIGNACIÓN CLAVE: Si no haces esto, saldrá "Pendiente" en la tabla
+            cita.NombreVeterinario = veterinario.Nombre;
+            cita.Estado = "Confirmada"; // Se confirma automáticamente al ser seguimiento
+        }
+
+        // 2. Guardamos la nueva cita con todos sus datos (incluyendo el UsuarioId que ya corregimos)
+        _context.Citas.Add(cita);
+
+        // 3. Limpiamos el seguimiento de la lista "Pacientes por Volver"
+        var historiaAnterior = await _context.HistoriasClinicas
+            .Where(h => h.MascotaId == cita.MascotaId && h.ProximaCitaSugerida != null)
+            .OrderByDescending(h => h.FechaAtencion)
+            .FirstOrDefaultAsync();
+
+        if (historiaAnterior != null)
+        {
+            historiaAnterior.ProximaCitaSugerida = null;
+            _context.Update(historiaAnterior);
+        }
+
+        await _context.SaveChangesAsync();
+
+        // Usamos TempData para el mensaje de éxito una sola vez
+        TempData["Mensaje"] = "Cita agendada correctamente con el " + cita.NombreVeterinario;
+
+        return RedirectToAction(nameof(GestionCitas));
+    }
+
 }

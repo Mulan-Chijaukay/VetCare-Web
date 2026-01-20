@@ -27,6 +27,9 @@ namespace VetCare.Web.Models
         [Required]
         public string Horario { get; set; }
 
+        [Required]
+        public string Prioridad { get; set; } = "Baja"; // Valores: Baja, Media, Alta
+
         public string? Observaciones { get; set; }
 
         public string Estado { get; set; } = "Pendiente";

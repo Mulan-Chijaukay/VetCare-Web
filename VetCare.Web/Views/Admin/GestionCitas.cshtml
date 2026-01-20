@@ -14,7 +14,8 @@
         <table class="table table-hover align-middle mb-0">
             <thead class="bg-dark text-white">
                 <tr>
-                    <th class="ps-4">Mascota</th>
+                    <th class="ps-4">Prioridad</th> @* Nueva Columna *@
+                    <th>Mascota</th>
                     <th>Servicio</th>
                     <th>Horario</th>
                     <th>Veterinario</th>
@@ -26,7 +27,21 @@
                 @foreach (var cita in Model)
                 {
                     <tr>
-                        <td class="ps-4 fw-bold">@cita.Mascota?.Nombre</td>
+                        <td class="ps-4">
+                            @if (cita.Prioridad == "Alta")
+                            {
+                                <span class="badge rounded-pill bg-danger text-white"><i class="bi bi-exclamation-triangle-fill"></i> ALTA</span>
+                            }
+                            else if (cita.Prioridad == "Media")
+                            {
+                                <span class="badge rounded-pill bg-warning text-dark"><i class="bi bi-clock-history"></i> MEDIA</span>
+                            }
+                            else
+                            {
+                                <span class="badge rounded-pill bg-success"><i class="bi bi-shield-check"></i> BAJA</span>
+                            }
+                        </td>
+                        <td class="fw-bold">@cita.Mascota?.Nombre</td>
                         <td>@cita.Servicio</td>
                         <td>@cita.Fecha.ToShortDateString() <br><small class="text-muted">@cita.Horario</small></td>
                         <td>@(cita.NombreVeterinario ?? "Pendiente")</td>
@@ -39,13 +54,11 @@
                             <div class="d-flex justify-content-center gap-2">
                                 @if (cita.Estado == "Pendiente")
                                 {
-                                    @* Botón Asignar corregido *@
                                     <button class="btn btn-sm btn-info text-white rounded-circle"
                                             onclick="abrirModalAsignar(@cita.Id)" title="Asignar Médico">
                                         <i class="bi bi-person-plus-fill"></i>
                                     </button>
                                 }
-                                @* Botón Eliminar con SweetAlert2 *@
                                 <button type="button" class="btn btn-sm btn-outline-danger rounded-circle"
                                         onclick="confirmarEliminar(@cita.Id)" title="Eliminar Cita">
                                     <i class="bi bi-trash"></i>

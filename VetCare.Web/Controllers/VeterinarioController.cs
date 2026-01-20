@@ -53,6 +53,8 @@ namespace VetCare.Web.Controllers
             return View(citas);
         }
 
+
+
         // GET: Veterinario/HistorialPacientes
         public async Task<IActionResult> HistorialPacientes(string searchString)
         {
@@ -77,18 +79,28 @@ namespace VetCare.Web.Controllers
 
 
 
+        //  vista "Mis Consultas"
+        public async Task<IActionResult> MisConsultas()
+        {
+            var userId = _userManager.GetUserId(User);
+            var misAtenciones = await _context.HistoriasClinicas
+                .Include(h => h.Mascota)
+                    .ThenInclude(m => m.Usuario)
+                .Include(h => h.Cita) // <--- Agrega esto para conectar la historia con la cita
+                    .ThenInclude(c => c.Veterinario) // <--- Y esto para llegar al veterinario
+                .Where(h => h.Cita.Veterinario.UsuarioId == userId)
+                .OrderByDescending(h => h.FechaAtencion)
+                .ToListAsync();
 
+            return View(misAtenciones);
+        }
 
-
-        // POST: Veterinario/FinalizarConsulta
+        // método FinalizarConsulta 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> FinalizarConsulta(int citaId, string diagnostico, string tratamiento)
+        public async Task<IActionResult> FinalizarConsulta(int citaId, string diagnostico, string tratamiento, DateTime? proximaCitaSugerida)
         {
-            // Obtenemos el ID del veterinario actual para seguridad
             var userId = _userManager.GetUserId(User);
-
-            // 1. Buscamos la cita incluyendo las relaciones necesarias
             var cita = await _context.Citas
                 .Include(c => c.Mascota)
                 .Include(c => c.Veterinario)
@@ -96,23 +108,12 @@ namespace VetCare.Web.Controllers
 
             if (cita == null) return NotFound();
 
-            // --- VALIDACIÓN DE SEGURIDAD Y DUPLICADOS ---
-            // Verificamos que la cita le pertenezca a este veterinario
             if (cita.Veterinario?.UsuarioId != userId)
             {
-                TempData["Error"] = "No tienes permiso para finalizar esta consulta.";
-                return RedirectToAction(nameof(Inicio));
+                return Forbid();
             }
 
-            // Verificamos si ya está completada para no duplicar historia clínica
-            if (cita.Estado == "Completada")
-            {
-                TempData["Mensaje"] = "Esta consulta ya fue registrada anteriormente.";
-                return RedirectToAction(nameof(Inicio));
-            }
-            // --------------------------------------------
-
-            // 2. Creamos el registro en la Historia Clínica
+            // Lógica de creación de HistoriaClinica
             var entradaHistoria = new HistoriaClinica
             {
                 MascotaId = cita.MascotaId,
@@ -120,31 +121,18 @@ namespace VetCare.Web.Controllers
                 Diagnostico = diagnostico,
                 Tratamiento = tratamiento,
                 VeterinarioNombre = cita.Veterinario?.NombreCompleto ?? "Veterinario",
-                CitaId = cita.Id
+                CitaId = cita.Id,
+                ProximaCitaSugerida = proximaCitaSugerida // <--- DATO CLAVE GUARDADO
             };
 
-            // 3. Actualizamos el estado de la cita
             cita.Estado = "Completada";
-            cita.Diagnostico = diagnostico;
-            cita.Tratamiento = tratamiento; // Asegúrate de que Cita tenga este campo también
 
-            try
-            {
-                _context.HistoriasClinicas.Add(entradaHistoria);
-                _context.Citas.Update(cita);
-                await _context.SaveChangesAsync();
-
-                TempData["Mensaje"] = "Consulta finalizada. Se ha generado un nuevo registro en la Historia Clínica.";
-            }
-            catch (Exception ex)
-            {
-                TempData["Error"] = "Hubo un error al guardar en la base de datos.";
-            }
+            _context.HistoriasClinicas.Add(entradaHistoria);
+            _context.Citas.Update(cita);
+            await _context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Inicio));
         }
-
-
 
 
 
@@ -159,11 +147,6 @@ namespace VetCare.Web.Controllers
 
             return View(mascota);
         }
-
-
-
-
-
 
 
 
