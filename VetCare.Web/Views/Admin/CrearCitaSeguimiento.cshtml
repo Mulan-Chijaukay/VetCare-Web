@@ -4,93 +4,199 @@
     ViewData["Title"] = "Agendar Seguimiento";
 }
 
-<div class="container py-5">
-    <div class="card border-0 shadow-lg rounded-4 overflow-hidden" style="max-width: 1100px; margin: auto;">
-        <div class="row g-0 align-items-stretch">
-            @* align-items-stretch asegura que ambas columnas midan lo mismo *@
 
-            @* COLUMNA IZQUIERDA: IMAGEN *@
-            <div class="col-lg-6 d-none d-lg-block position-relative">
-                <img src="~/img/registromascota.jpg"
-                     class="img-fluid w-100 h-100"
-                     alt="Registro"
-                     style="object-fit: cover; position: absolute; top: 0; left: 0;">
+<style>
+    /* Forzamos al contenedor del layout a no tener espacios internos */
+    main, .container, .container-fluid {
+        padding: 0 !important;
+        margin: 0 !important;
+        max-width: 100% !important;
+    }
+
+    /* Contenedor principal que ocupa todo el alto disponible debajo del TopBar */
+    .admin-split-viewport {
+        position: relative;
+        height: calc(100vh - 60px); /* Ajusta 60px según el alto de tu barra superior */
+        width: 100%;
+        display: flex;
+        overflow: hidden; /* CERO SCROLL */
+        background-color: #ffffff;
+    }
+
+    /* Lado Izquierdo: Imagen Inmersiva Total */
+    .side-image-container {
+        flex: 0 0 50%; /* Ocupa exactamente la mitad */
+        height: 100%;
+        position: relative;
+        background-color: #000;
+    }
+
+        .side-image-container img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover; /* Centra y recorta la imagen automáticamente */
+            display: block;
+        }
+
+    /* Lado Derecho: Formulario con Casillas Grisáceas */
+    .side-form-container {
+        flex: 0 0 50%; /* La otra mitad exacta */
+        display: flex;
+        align-items: center; /* Centrado Vertical */
+        justify-content: center; /* Centrado Horizontal */
+        padding: 40px;
+        background-color: #ffffff;
+    }
+
+    .form-inner-box {
+        width: 100%;
+        max-width: 480px;
+    }
+
+    /* Diseño de casillas gris profesional para contraste */
+    .field-wrapper {
+        position: relative;
+        margin-bottom: 1.2rem;
+    }
+
+        .field-wrapper i {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #17a2b8;
+            z-index: 5;
+        }
+
+    .gray-input-field {
+        width: 100%;
+        background-color: #f2f4f7 !important; /* Gris oscuro suave para resaltar */
+        border: 2px solid transparent !important;
+        border-radius: 12px !important;
+        padding: 12px 15px 12px 45px !important;
+        color: #2d3436 !important;
+        font-weight: 500;
+        transition: 0.3s ease;
+    }
+
+        .gray-input-field:focus {
+            background-color: #ffffff !important;
+            border-color: #17a2b8 !important;
+            box-shadow: 0 5px 15px rgba(23, 162, 184, 0.1) !important;
+            outline: none;
+        }
+
+    .btn-gradient-confirm {
+        background: linear-gradient(135deg, #ff9f43 0%, #ff6b6b 100%);
+        color: white;
+        border: none;
+        padding: 14px;
+        border-radius: 50px;
+        font-weight: bold;
+        width: 100%;
+        box-shadow: 0 8px 20px rgba(255, 159, 67, 0.3);
+        transition: 0.3s ease;
+    }
+
+        .btn-gradient-confirm:hover {
+            transform: translateY(-2px);
+            filter: brightness(1.1);
+        }
+</style>
+
+<div class="admin-split-viewport">
+    @* COLUMNA IZQUIERDA: IMAGEN *@
+    <div class="side-image-container d-none d-lg-block">
+        <img src="~/img/puddle.jpeg" alt="Paciente">
+        @* Overlay con gradiente para el texto - FRASE MÁS GRANDE *@
+        <div style="position: absolute; bottom: 0; left: 0; right: 0; padding: 60px; background: linear-gradient(transparent, rgba(0,0,0,0.85)); color: white;">
+
+            @* Título principal en tamaño Gigante *@
+            <h1 class="display-4 fw-bold mb-3" style="letter-spacing: -1px; line-height: 1.1;">
+                ¡Salud y Bienestar <br /> Primero!
+            </h1>
+
+            @* Subtítulo más legible *@
+            <p class="fs-4 m-0 opacity-75" style="max-width: 500px; font-weight: 300;">
+                Programa el seguimiento preventivo para
+                <strong class="text-info">@ViewBag.NombreMascota</strong> de manera profesional.
+            </p>
+
+        </div>
+    </div>
+
+    @* COLUMNA DERECHA: FORMULARIO *@
+    <div class="side-form-container">
+        <div class="form-inner-box">
+            @* Cabecera reducida para evitar scroll *@
+            <div class="text-center mb-4">
+                <span class="text-info fw-bold small text-uppercase tracking-widest">Seguimiento Médico</span>
+                <h1 class="fw-bold text-dark mt-2 h2">Agendar Seguimiento</h1>
             </div>
 
-            @* COLUMNA DERECHA: FORMULARIO *@
-            <div class="col-lg-6 bg-white">
-                <div class="bg-dark p-4 text-white">
-                    <h4 class="m-0 fw-bold"><i class="bi bi-calendar-plus me-2 text-warning"></i>Agendar Seguimiento</h4>
+            @* Card Informativa del Paciente *@
+            <div class="p-3 rounded-4 bg-light border-start border-4 border-info mb-4 d-flex align-items-center">
+                <i class="bi bi-heart-pulse-fill text-info fs-4 me-3"></i>
+                <div>
+                    <small class="text-muted d-block fw-bold text-uppercase" style="font-size: 0.65rem;">Paciente Seleccionado</small>
+                    <span class="h5 fw-bold text-dark m-0">@ViewBag.NombreMascota</span>
+                </div>
+            </div>
+
+            <form asp-action="GuardarCitaSeguimiento" method="post">
+                <input type="hidden" name="MascotaId" value="@ViewBag.MascotaId" />
+                <input type="hidden" name="UsuarioId" value="@ViewBag.UsuarioId" />
+
+                <div class="field-wrapper">
+                    <i class="bi bi-clipboard2-pulse"></i>
+                    <select name="Servicio" class="gray-input-field" required>
+                        <option value="Consulta General">Consulta General</option>
+                        <option value="Vacunación">Vacunación</option>
+                        <option value="Desparasitación">Desparasitación</option>
+                    </select>
                 </div>
 
-                <form asp-action="GuardarCitaSeguimiento" method="post" class="p-4 p-md-5">
-                    @* CAMPOS OCULTOS OBLIGATORIOS PARA LA BASE DE DATOS *@
-                    <input type="hidden" name="MascotaId" value="@ViewBag.MascotaId" />
-                    <input type="hidden" name="UsuarioId" value="@ViewBag.UsuarioId" /> @* <--- CORRIGE EL ERROR DE LA IMAGEN *@
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-muted small text-uppercase">Paciente</label>
-                        <div class="input-group">
-                            <span class="input-group-text bg-light border-0"><i class="bi bi-heart-pulse text-primary"></i></span>
-                            <input type="text" class="form-control bg-light border-0 fw-bold" value="@ViewBag.NombreMascota" readonly />
+                <div class="row g-2">
+                    <div class="col-6">
+                        <div class="field-wrapper">
+                            <i class="bi bi-calendar3"></i>
+                            <input type="date" name="Fecha" class="gray-input-field" value="@ViewBag.FechaSugerida" required />
                         </div>
                     </div>
-
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-muted small text-uppercase">Servicio</label>
-                        <select name="Servicio" class="form-select border-primary" required>
-                            <option value="Consulta General">Consulta General</option>
-                            <option value="Vacunación">Vacunación</option>
-                            <option value="Desparasitación">Desparasitación</option>
-                            <option value="Baño y Corte">Baño y Corte</option>
-                        </select>
-                    </div>
-
-                    <div class="row">
-                        <div class="col-6 mb-4">
-                            <label class="form-label fw-bold text-muted small text-uppercase">Fecha</label>
-                            <input type="date" name="Fecha" class="form-control border-primary" value="@ViewBag.FechaSugerida" required />
-                        </div>
-                        <div class="col-6 mb-4">
-                            <label class="form-label fw-bold text-muted small text-uppercase">Horario</label>
-                            <input type="text" name="Horario" class="form-control border-primary" placeholder="10:00 AM" required />
+                    <div class="col-6">
+                        <div class="field-wrapper">
+                            <i class="bi bi-clock"></i>
+                            <input type="text" name="Horario" class="gray-input-field" placeholder="09:00 AM" required />
                         </div>
                     </div>
+                </div>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-muted small text-uppercase">Médico</label>
-                        <select name="VeterinarioId" class="form-select border-primary" asp-items="ViewBag.Veterinarios" required>
-                            <option value="">-- Elegir Especialista --</option>
-                        </select>
-                    </div>
+                <div class="field-wrapper">
+                    <i class="bi bi-person-badge"></i>
+                    <select name="VeterinarioId" class="gray-input-field" asp-items="ViewBag.Veterinarios" required>
+                        <option value="">-- Seleccionar Médico --</option>
+                    </select>
+                </div>
 
-                    <div class="mb-4">
-                        <label class="form-label fw-bold text-muted small text-uppercase">Prioridad</label>
-                        <select name="Prioridad" class="form-select border-primary">
-                            <option value="Baja">Baja</option>
-                            <option value="Media" selected>Media</option>
-                            <option value="Alta">Alta (Urgente)</option>
-                        </select>
-                    </div>
+                <div class="field-wrapper mb-4">
+                    <i class="bi bi-flag-fill"></i>
+                    <select name="Prioridad" class="gray-input-field">
+                        <option value="Baja">Baja</option>
+                        <option value="Media" selected>Media</option>
+                        <option value="Alta">Alta</option>
+                    </select>
+                </div>
 
-                    <div class="d-grid gap-3 pt-3">
-                        <button type="submit" class="btn btn-primary py-3 fw-bold rounded-pill shadow">
-                            <i class="bi bi-check-circle me-2"></i>CONFIRMAR Y AGENDAR
-                        </button>
-                        <a asp-action="PacientesPorVolver" class="btn btn-link text-muted py-0">Cancelar y volver</a>
-                    </div>
-                </form>
-            </div>
+                <button type="submit" class="btn-gradient-confirm shadow-lg">
+                    <i class="bi bi-check-circle-fill me-2"></i> FINALIZAR AGENDAMIENTO
+                </button>
+
+                <div class="text-center mt-3">
+                    <a asp-action="PacientesPorVolver" class="text-decoration-none text-muted small fw-bold">
+                        <i class="bi bi-arrow-left"></i> Volver al panel
+                    </a>
+                </div>
+            </form>
         </div>
     </div>
 </div>
-<style>
-    .object-fit-cover {
-        object-fit: cover;
-    }
-
-    .form-select:focus, .form-control:focus {
-        border-color: #0d6efd;
-        box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.1);
-    }
-</style>

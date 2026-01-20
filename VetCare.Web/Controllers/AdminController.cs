@@ -21,10 +21,20 @@ public class AdminController : Controller
     public async Task<IActionResult> Dashboard()
     {
         var hoy = DateTime.Today;
-        ViewBag.Hoy = await _context.Citas.CountAsync(c => c.Fecha.Date == hoy);
-        ViewBag.Pendientes = await _context.Citas.CountAsync(c => c.Estado == "Pendiente");
-        ViewBag.Mascotas = await _context.Mascotas.CountAsync();
-        return View();
+
+        // Creamos el modelo y lo llenamos con los datos reales
+        var model = new DashboardViewModel
+        {
+            CitasHoy = await _context.Citas.CountAsync(c => c.Fecha.Date == hoy),
+            CitasPendientes = await _context.Citas.CountAsync(c => c.Estado == "Pendiente"),
+            TotalMascotas = await _context.Mascotas.CountAsync(),
+
+            // PRUEBA REAL DE BASE DE DATOS
+            DbOnline = await _context.Database.CanConnectAsync(),
+            AppActiva = true // Si el código llega aquí, la app está viva
+        };
+
+        return View(model);
     }
 
     public async Task<IActionResult> GestionCitas()
