@@ -156,20 +156,35 @@
                     </select>
                 </div>
 
+                @* Fecha y Horario*@
                 <div class="row g-2">
                     <div class="col-6">
                         <div class="field-wrapper">
                             <i class="bi bi-calendar3"></i>
-                            <input type="date" name="Fecha" class="gray-input-field" value="@ViewBag.FechaSugerida" required />
+                            @* 'min' para bloquear fechas pasadas en el calendario *@
+                            <input type="date" name="Fecha" class="gray-input-field"
+                                   value="@ViewBag.FechaSugerida"
+                                   min="@DateTime.Now.ToString("yyyy-MM-dd")" required />
                         </div>
                     </div>
                     <div class="col-6">
                         <div class="field-wrapper">
                             <i class="bi bi-clock"></i>
-                            <input type="text" name="Horario" class="gray-input-field" placeholder="09:00 AM" required />
+                            
+                            <select name="Horario" class="gray-input-field" required>
+                                <option value="">Hora</option>
+                                <option value="09:00 AM">09:00 AM</option>
+                                <option value="10:00 AM">10:00 AM</option>
+                                <option value="11:00 AM">11:00 AM</option>
+                                <option value="12:00 PM">12:00 PM</option>
+                                <option value="03:00 PM">03:00 PM</option>
+                                <option value="04:00 PM">04:00 PM</option>
+                                <option value="05:00 PM">05:00 PM</option>
+                            </select>
                         </div>
                     </div>
                 </div>
+               
 
                 <div class="field-wrapper">
                     <i class="bi bi-person-badge"></i>
@@ -200,3 +215,47 @@
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const form = document.querySelector('form');
+            const inputFecha = document.querySelector('input[name="Fecha"]');
+            const inputHorario = document.querySelector('input[name="Horario"]');
+
+            // 1. LIMITAR FECHA MÍNIMA (No permitir pasado)
+            const hoy = new Date().toISOString().split('T')[0];
+            inputFecha.setAttribute('min', hoy);
+
+            form.addEventListener('submit', function (e) {
+                // 2. VALIDACIÓN DE HORA (Formato 00:00 AM/PM)
+                const horaRegex = /^(0?[1-9]|1[0-2]):[0-5][0-9]\s(AM|PM)$/i;
+                const horaValor = inputHorario.value.toUpperCase();
+
+                if (!horaRegex.test(horaValor)) {
+                    e.preventDefault(); // Detiene el envío
+                    Swal.fire({
+                        title: 'Formato de Hora Inválido',
+                        text: 'Por favor usa el formato: 09:00 AM o 03:30 PM',
+                        icon: 'warning',
+                        confirmButtonColor: '#3e929a'
+                    });
+                    return;
+                }
+
+                // 3. VALIDACIÓN DE FECHA (Doble chequeo)
+                if (inputFecha.value < hoy) {
+                    e.preventDefault();
+                    Swal.fire({
+                        title: 'Fecha Inválida',
+                        text: 'No puedes programar citas en días pasados.',
+                        icon: 'error',
+                        confirmButtonColor: '#3e929a'
+                    });
+                }
+            });
+        });
+    </script>
+}

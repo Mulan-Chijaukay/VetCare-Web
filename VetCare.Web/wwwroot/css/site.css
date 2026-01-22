@@ -316,3 +316,64 @@
     padding: 60px;
     text-align: center;
 }
+
+/* --- ADAPTACIÓN PARA MÓVILES (VetCare Responsive) --- */
+@media (max-width: 768px) {
+    /* El contenedor deja de ser rígido y ocupa el ancho del cel */
+    .main-auth-container {
+        width: 100%;
+        min-height: 100vh;
+        border-radius: 0;
+        box-shadow: none;
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Escondemos el panel naranja en móviles porque quita espacio visual */
+    .overlay-container {
+        display: none !important;
+    }
+
+    /* Los formularios ocupan todo el ancho y se centran */
+    .form-box {
+        position: relative !important;
+        width: 100% !important;
+        left: 0 !important;
+        padding: 40px 20px !important;
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+    }
+
+    /* Por defecto mostramos el login, escondemos el registro */
+    .register-container {
+        display: none;
+    }
+
+
+
+
+    /* ESTO EVITA QUE EL FORMULARIO SE VAYA AL "LIMBO" BLANCO */
+    .main-auth-container.right-panel-active .login-container {
+        transform: none !important;
+        opacity: 0;
+        display: none !important;
+    }
+
+    .main-auth-container.right-panel-active .register-container {
+        transform: none !important;
+        opacity: 1;
+        display: flex !important;
+        left: 0 !important; /* Lo obliga a estar al inicio */
+        width: 100% !important;
+    }
+
+    /* Forzamos que el login también ocupe todo el ancho cuando esté activo */
+    .login-container {
+        transform: none !important;
+        left: 0 !important;
+        width: 100% !important;
+        display: flex !important;
+    }
+}

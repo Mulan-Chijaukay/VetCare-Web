@@ -44,5 +44,8 @@ namespace VetCare.Web.Models
         [ForeignKey("VeterinarioId")]
         public virtual Veterinario? Veterinario { get; set; } 
         public string? NombreVeterinario { get; set; }
+
+        // Relación inversa para poder acceder a las historias desde la cita
+        public virtual ICollection<HistoriaClinica> HistoriasClinicas { get; set; } = new List<HistoriaClinica>();
     }
 }

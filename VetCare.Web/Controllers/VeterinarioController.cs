@@ -86,8 +86,8 @@ namespace VetCare.Web.Controllers
             var misAtenciones = await _context.HistoriasClinicas
                 .Include(h => h.Mascota)
                     .ThenInclude(m => m.Usuario)
-                .Include(h => h.Cita) // <--- Agrega esto para conectar la historia con la cita
-                    .ThenInclude(c => c.Veterinario) // <--- Y esto para llegar al veterinario
+                .Include(h => h.Cita)
+                    .ThenInclude(c => c.Veterinario) 
                 .Where(h => h.Cita.Veterinario.UsuarioId == userId)
                 .OrderByDescending(h => h.FechaAtencion)
                 .ToListAsync();
@@ -139,7 +139,7 @@ namespace VetCare.Web.Controllers
         public async Task<IActionResult> DetallePaciente(int id)
         {
             var mascota = await _context.Mascotas
-                .Include(m => m.Usuario) // Dueño
+                .Include(m => m.Usuario) 
                 .Include(m => m.HistoriasClinicas.OrderByDescending(h => h.FechaAtencion))
                 .FirstOrDefaultAsync(m => m.Id == id);
 

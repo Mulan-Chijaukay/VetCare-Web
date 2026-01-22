@@ -37,6 +37,11 @@
                 <tbody>
                     @foreach (var cita in Model)
                     {
+                        // Obtenemos la info de la historia clínica vinculada a esta cita
+                        var historia = cita.HistoriasClinicas?.FirstOrDefault();
+                        var diag = historia?.Diagnostico ?? "Sin diagnóstico registrado";
+                        var trat = historia?.Tratamiento ?? "Sin tratamiento registrado";
+
                         <tr>
                             <td class="ps-4 fw-bold">@cita.Mascota?.Nombre</td>
                             <td>@cita.Servicio</td>
@@ -48,7 +53,15 @@
                                 </span>
                             </td>
                             <td class="pe-4 text-center">
-                                <button class="btn btn-sm btn-outline-primary rounded-pill px-3">Ver Detalle</button>
+                                <span id="diag-@cita.Id" style="display:none">@diag</span>
+                                <span id="trat-@cita.Id" style="display:none">@trat</span>
+
+                                <button class="btn btn-sm btn-primary rounded-pill px-3 shadow-sm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#modalDetalleCita"
+                                        onclick="mostrarAtencion('@cita.Id', '@cita.Mascota?.Nombre', '@cita.Servicio')">
+                                    Ver Detalle
+                                </button>
                             </td>
                         </tr>
                     }
@@ -56,4 +69,55 @@
             </table>
         </div>
     }
+
+
+    <div class="modal fade" id="modalDetalleCita" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4">
+                <div class="modal-header border-0 bg-light p-4">
+                    <h5 class="fw-bold m-0" style="color: #3e929a;">Detalles de la Atención</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="small text-muted fw-bold text-uppercase">Mascota / Servicio</label>
+                        <p id="detMascotaServicio" class="fs-5 fw-bold text-dark"></p>
+                    </div>
+                    <hr class="opacity-10">
+                    <div class="mb-4">
+                        <label class="small text-muted fw-bold text-uppercase d-block mb-2">Diagnóstico Médico</label>
+                        <div class="p-3 bg-light rounded-3 italic">
+                            <i class="bi bi-clipboard2-pulse me-2 text-primary"></i>
+                            <span id="detDiagnostico"></span>
+                        </div>
+                    </div>
+                    <div>
+                        <label class="small text-muted fw-bold text-uppercase d-block mb-2">Tratamiento Indicado</label>
+                        <div class="p-3 rounded-3" style="background-color: #fff4e6; border-left: 4px solid #ff9f43;">
+                            <i class="bi bi-capsule me-2 text-warning"></i>
+                            <span id="detTratamiento"></span>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer border-0 p-4 pt-0">
+                    <button type="button" class="btn btn-secondary rounded-pill px-4" data-bs-dismiss="modal">Cerrar</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
 </div>
+
+@section Scripts {
+    <script>
+        function mostrarAtencion(id, mascota, servicio) {
+            const diagnosticoText = document.getElementById('diag-' + id).innerText;
+            const tratamientoText = document.getElementById('trat-' + id).innerText;
+
+            document.getElementById('detMascotaServicio').innerText = mascota + " - " + servicio;
+            document.getElementById('detDiagnostico').innerText = diagnosticoText;
+            document.getElementById('detTratamiento').innerText = tratamientoText;
+        }
+    </script>
+}

@@ -52,13 +52,15 @@
                         </td>
                         <td class="pe-4 text-center">
                             <div class="d-flex justify-content-center gap-2">
-                                @if (cita.Estado == "Pendiente")
+                                @* Solo se muestra el botón si la cita NO está completada *@
+                                @if (cita.Estado != "Completada")
                                 {
                                     <button class="btn btn-sm btn-info text-white rounded-circle"
-                                            onclick="abrirModalAsignar(@cita.Id)" title="Asignar Médico">
+                                            onclick="abrirModalAsignar(@cita.Id)" title="Asignar/Cambiar Médico">
                                         <i class="bi bi-person-plus-fill"></i>
                                     </button>
                                 }
+
                                 <button type="button" class="btn btn-sm btn-outline-danger rounded-circle"
                                         onclick="confirmarEliminar(@cita.Id)" title="Eliminar Cita">
                                     <i class="bi bi-trash"></i>
@@ -100,15 +102,17 @@
 
 @section Scripts {
     <script>
-        // Función para abrir el modal manualmente y pasar el ID
+        // 1. Función para abrir el modal (Mejorada para limpiar rastro de errores previos)
         function abrirModalAsignar(id) {
             document.getElementById('citaIdInput').value = id;
             var modalElement = document.getElementById('modalAsignar');
-            var instanciaModal = new bootstrap.Modal(modalElement);
+
+            // Usamos GetOrCreateInstance para evitar que Bootstrap se trabe
+            var instanciaModal = bootstrap.Modal.getOrCreateInstance(modalElement);
             instanciaModal.show();
         }
 
-        // Función para eliminación segura
+        // 2. Función para eliminación segura
         function confirmarEliminar(id) {
             Swal.fire({
                 title: '¿Eliminar cita?',
@@ -128,6 +132,36 @@
                     form.submit();
                 }
             });
+        }
+
+        // --- MANEJO DE MENSAJES DEL SERVIDOR ---
+
+        @if (TempData["ErrorAsignacion"] != null)
+        {
+                <text>
+                Swal.fire({
+                    title: '¡Médico Ocupado!',
+                    text: '@Html.Raw(TempData["ErrorAsignacion"])',
+                    icon: 'warning',
+                    confirmButtonColor: '#d33',
+                    confirmButtonText: 'Intentar con otro'
+                }).then(() => {
+                    // Forzamos el refresco para limpiar el estado de los modales de Bootstrap
+                    window.location.href = '@Url.Action("GestionCitas", "Admin")';
+                });
+                </text>
+        }
+
+        @if (TempData["Mensaje"] != null)
+        {
+                <text>
+                Swal.fire({
+                    title: 'Éxito',
+                    text: '@Html.Raw(TempData["Mensaje"])',
+                    icon: 'success',
+                    confirmButtonColor: '#3e929a'
+                });
+                </text>
         }
     </script>
 }

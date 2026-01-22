@@ -31,7 +31,7 @@ public class AdminController : Controller
 
             // PRUEBA REAL DE BASE DE DATOS
             DbOnline = await _context.Database.CanConnectAsync(),
-            AppActiva = true // Si el código llega aquí, la app está viva
+            AppActiva = true 
         };
 
         return View(model);
@@ -53,18 +53,43 @@ public class AdminController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> AsignarVeterinario(int citaId, int veterinarioId)
     {
-        var cita = await _context.Citas.FindAsync(citaId);
-        var vet = await _context.Veterinarios.FindAsync(veterinarioId);
+        var citaActual = await _context.Citas.FindAsync(citaId);
+        if (citaActual == null) return NotFound();
 
-        if (cita != null && vet != null)
+        // SEGURIDAD: Si ya está completada, no permitir cambios
+        if (citaActual.Estado == "Completada")
         {
-            cita.VeterinarioId = veterinarioId;
-            cita.NombreVeterinario = vet.Nombre;
-            cita.Estado = "Confirmada";
-            _context.Update(cita);
-            await _context.SaveChangesAsync();
-            TempData["Mensaje"] = "Médico asignado correctamente.";
+            TempData["ErrorAsignacion"] = "No se puede cambiar el médico de una cita que ya ha sido completada.";
+            return RedirectToAction(nameof(GestionCitas));
         }
+
+        // VALIDACIÓN DE CHOQUE
+        bool estaOcupado = await _context.Citas.AnyAsync(c =>
+            c.VeterinarioId == veterinarioId &&
+            c.Fecha.Date == citaActual.Fecha.Date &&
+            c.Horario == citaActual.Horario &&
+            c.Id != citaId &&
+            c.Estado != "Cancelada"); // Las canceladas no ocupan espacio
+
+        if (estaOcupado)
+        {
+            // Usamos un formato que evite problemas de lectura
+            TempData["ErrorAsignacion"] = $"Asignación fallida: El médico ya tiene un turno ocupado a las {citaActual.Horario}";
+            return RedirectToAction(nameof(GestionCitas));
+        }
+
+        var vet = await _context.Veterinarios.FindAsync(veterinarioId);
+        if (vet != null)
+        {
+            citaActual.VeterinarioId = veterinarioId;
+            citaActual.NombreVeterinario = vet.Nombre;
+            citaActual.Estado = "Confirmada";
+
+            _context.Update(citaActual);
+            await _context.SaveChangesAsync();
+            TempData["Mensaje"] = "Asignación actualizada correctamente.";
+        }
+
         return RedirectToAction(nameof(GestionCitas));
     }
 
@@ -124,7 +149,7 @@ public class AdminController : Controller
                 };
                 _context.Veterinarios.Add(vete);
                 await _context.SaveChangesAsync();
-                TempData["Mensaje"] = $"Veterinario registrado. Login: {emailAcceso}";
+                TempData["RegistroExitoso"] = "true";
                 return RedirectToAction(nameof(ListaVeterinarios));
             }
         }
@@ -166,7 +191,7 @@ public class AdminController : Controller
         ViewBag.MascotaId = mascotaId;
         ViewBag.NombreMascota = mascota.Nombre;
         ViewBag.FechaSugerida = fechaSugerida;
-        ViewBag.UsuarioId = mascota.UsuarioId; // <--- DATO VITAL PARA EVITAR EL ERROR SQL
+        ViewBag.UsuarioId = mascota.UsuarioId; 
 
         ViewBag.Veterinarios = new SelectList(await _context.Veterinarios.Where(v => v.EstaActivo).ToListAsync(), "Id", "Nombre");
 
@@ -174,22 +199,33 @@ public class AdminController : Controller
     }
 
     [HttpPost]
+    [ValidateAntiForgeryToken]
     public async Task<IActionResult> GuardarCitaSeguimiento(Cita cita)
     {
-        // 1. Buscamos el médico en la BD usando el ID seleccionado en el formulario
-        var veterinario = await _context.Veterinarios.FindAsync(cita.VeterinarioId);
+        // A. Validar Choque de Horario (Doctor ocupado)
+        bool estaOcupado = await _context.Citas.AnyAsync(c =>
+            c.VeterinarioId == cita.VeterinarioId &&
+            c.Fecha.Date == cita.Fecha.Date &&
+            c.Horario == cita.Horario &&
+            c.Estado != "Cancelada");
 
-        if (veterinario != null)
+        if (estaOcupado)
         {
-            // ASIGNACIÓN CLAVE: Si no haces esto, saldrá "Pendiente" en la tabla
-            cita.NombreVeterinario = veterinario.Nombre;
-            cita.Estado = "Confirmada"; // Se confirma automáticamente al ser seguimiento
+            TempData["Error"] = $"El médico ya tiene una cita el {cita.Fecha.ToShortDateString()} a las {cita.Horario}.";
+            return RedirectToAction(nameof(PacientesPorVolver));
         }
 
-        // 2. Guardamos la nueva cita con todos sus datos (incluyendo el UsuarioId que ya corregimos)
+        // B. Proceso normal de guardado
+        var veterinario = await _context.Veterinarios.FindAsync(cita.VeterinarioId);
+        if (veterinario != null)
+        {
+            cita.NombreVeterinario = veterinario.Nombre;
+            cita.Estado = "Confirmada";
+        }
+
         _context.Citas.Add(cita);
 
-        // 3. Limpiamos el seguimiento de la lista "Pacientes por Volver"
+        // Limpiar seguimiento
         var historiaAnterior = await _context.HistoriasClinicas
             .Where(h => h.MascotaId == cita.MascotaId && h.ProximaCitaSugerida != null)
             .OrderByDescending(h => h.FechaAtencion)
@@ -202,10 +238,7 @@ public class AdminController : Controller
         }
 
         await _context.SaveChangesAsync();
-
-        // Usamos TempData para el mensaje de éxito una sola vez
-        TempData["Mensaje"] = "Cita agendada correctamente con el " + cita.NombreVeterinario;
-
+        TempData["Mensaje"] = "Cita de seguimiento agendada con éxito.";
         return RedirectToAction(nameof(GestionCitas));
     }
 

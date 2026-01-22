@@ -23,11 +23,18 @@
                     <h1 class="text-white m-0 fw-bold" style="font-size: 2.5rem; letter-spacing: -1px;">Descubre con nosotros</h1>
                 </div>
 
+                
+
                 <div class="navbar-nav align-items-center gap-3">
-                    <a class="btn-nav-figma" href="#">Quiénes somos</a>
-                    <a class="btn-nav-figma" href="#">Ofertas actuales</a>
-                    <a class="btn btn-naranja-figma px-4" asp-controller="Account" asp-action="Index">Iniciar sesion</a>
+                    @* Enlace a Quienes Somos *@
+                    <a class="btn-nav-figma text-decoration-none" asp-controller="Account" asp-action="QuienesSomos">Quiénes somos</a>
+
+                    @* Enlace a Ofertas (con el color naranja que te gusta) *@
+                    <a class="btn-nav-figma text-decoration-none" asp-controller="Account" asp-action="Ofertas" style="color: #ff9f43 !important;">Ofertas actuales</a>
+
+                    <a class="btn btn-naranja-figma px-4 fw-bold" asp-controller="Account" asp-action="Index">Iniciar sesion</a>
                 </div>
+
             </div>
         </nav>
     </header>

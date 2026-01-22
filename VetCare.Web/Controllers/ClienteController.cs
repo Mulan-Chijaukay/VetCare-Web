@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
@@ -7,6 +8,7 @@ using VetCare.Web.Models;
 
 namespace VetCare.Web.Controllers
 {
+    [Authorize(Roles = "Cliente")]
     public class ClienteController : Controller
     {
         private readonly ApplicationDbContext _context;
@@ -121,17 +123,16 @@ namespace VetCare.Web.Controllers
 
         public async Task<IActionResult> Historial()
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var historial = await _context.Citas
+            var userId = _userManager.GetUserId(User);
+            var citas = await _context.Citas
                 .Include(c => c.Mascota)
                 .Include(c => c.Veterinario)
-                .Where(c => c.UsuarioId == userId &&
-                           (c.Estado == "Completada" || c.Estado == "Cancelada"))
+                .Include(c => c.HistoriasClinicas) // <--- ESTO ES LO QUE HACE QUE FUNCIONE
+                .Where(c => c.UsuarioId == userId && c.Estado == "Completada")
                 .OrderByDescending(c => c.Fecha)
                 .ToListAsync();
 
-            return View(historial);
+            return View(citas);
         }
 
         public async Task<IActionResult> Configuracion()

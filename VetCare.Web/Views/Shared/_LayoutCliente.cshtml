@@ -32,5 +32,16 @@
         });
     </script>
     @await RenderSectionAsync("Scripts", required: false)
+
+    <script>
+        window.addEventListener("pageshow", function (event) {
+            // Verifica si la página se cargó desde el caché del historial
+            var perfEntries = performance.getEntriesByType("navigation");
+            if (perfEntries.length > 0 && perfEntries[0].type === "back_forward") {
+                window.location.replace("/Account/Index");
+            }
+        });
+    </script>
+
 </body>
 </html>

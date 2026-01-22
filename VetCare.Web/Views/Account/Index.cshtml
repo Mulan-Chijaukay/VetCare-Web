@@ -2,30 +2,51 @@
     ViewData["Title"] = "Acceso";
 }
 
+
+
 <div class="login-wrapper">
     <div class="main-auth-container" id="container">
 
+     
         <div class="form-box register-container text-center">
             <h1 class="fw-bold mb-5">Registro</h1>
-            <form asp-action="Register" asp-controller="Account" method="post">
+            <form asp-action="Register" asp-controller="Account" method="post" id="registerForm">
                 <div class="input-group-figma">
                     <i class="bi bi-person-fill"></i>
-                    <input type="text" name="Username" placeholder="Nombre de usuario" required />
+                    @* Quitamos el pattern de aquí para validarlo con JS y que no se trabe *@
+                    <input type="text" name="Username" id="regNombre" placeholder="Nombre completo" required />
                 </div>
                 <div class="input-group-figma">
                     <i class="bi bi-envelope-fill"></i>
-                    <input type="email" name="Email" placeholder="Correo electrónico" required />
+                    <input type="email" name="Email" id="regEmail" placeholder="Correo electrónico" required />
                 </div>
                 <div class="input-group-figma">
                     <i class="bi bi-lock-fill"></i>
-                    <input type="password" name="Password" placeholder="Contraseña" required />
+                    <input type="password" name="Password" id="regPassword" placeholder="Contraseña (mín. 8 caracteres)" required />
                 </div>
                 <button type="submit" class="btn btn-action-figma mt-4" style="background-color: var(--vet-turquesa); color: white; border-radius: 15px; padding: 15px; border:none; width:100%; font-weight:bold;">Registrarse</button>
+                <p class="mt-4 d-md-none text-muted">
+                    ¿Ya tienes cuenta? <a href="#" onclick="toggleAuth()" class="fw-bold text-info">Inicia sesión</a>
+                </p>
             </form>
         </div>
 
         <div class="form-box login-container text-center">
             <h1 class="fw-bold mb-5">Iniciar sesion</h1>
+
+            @* Mensaje de Error de Login *@
+            @if (TempData["ErrorLogin"] != null)
+            {
+                <div class="alert alert-danger d-flex align-items-center justify-content-center shadow-sm border-0 mb-4 fade show"
+                     style="border-radius: 15px; background-color: #fff5f5; color: #e53e3e; padding: 15px;">
+                    <i class="bi bi-exclamation-diamond-fill fs-4 me-3"></i>
+                    <div class="text-start">
+                        <strong class="d-block" style="font-size: 1rem;">Acceso Denegado</strong>
+                        <span style="font-size: 0.85rem;">@TempData["ErrorLogin"]</span>
+                    </div>
+                </div>
+            }
+
             <form asp-action="Login" asp-controller="Account" method="post">
                 <div class="input-group-figma">
                     <i class="bi bi-envelope-fill"></i>
@@ -36,6 +57,9 @@
                     <input type="password" name="Password" placeholder="Contraseña" required />
                 </div>
                 <button type="submit" class="btn btn-action-figma mt-4" style="background-color: var(--vet-turquesa); color: white; border-radius: 15px; padding: 15px; border:none; width:100%; font-weight:bold;">Continuar</button>
+                <p class="mt-4 d-md-none text-muted">
+                    ¿No tienes cuenta? <a href="#" onclick="toggleAuth()" class="fw-bold text-info">Regístrate</a>
+                </p>
             </form>
         </div>
 
@@ -55,3 +79,78 @@
         </div>
     </div>
 </div>
+
+
+
+
+
+
+
+
+
+@section Scripts {
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        const container = document.getElementById('container');
+        const registerBtn = document.getElementById('registerBtn');
+        const loginBtn = document.getElementById('loginBtn');
+        const registerForm = document.getElementById('registerForm');
+
+        // Movimiento de paneles
+        registerBtn.addEventListener('click', () => container.classList.add("right-panel-active"));
+        loginBtn.addEventListener('click', () => container.classList.remove("right-panel-active"));
+                // Función para cambiar entre login y registro en móviles
+                function toggleAuth() {
+            const container = document.getElementById('container');
+            container.classList.toggle("right-panel-active");
+
+            // Opcional: Hacer scroll hacia arriba para que el usuario vea el inicio del formulario
+            window.scrollTo(0, 0);
+        }
+        // VALIDACIÓN ANTES DE ENVIAR (Para que no se trabe el botón)
+        registerForm.addEventListener('submit', function (e) {
+            const nombre = document.getElementById('regNombre').value;
+            const pass = document.getElementById('regPassword').value;
+            const regexNombre = /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]+$/;
+
+            if (!regexNombre.test(nombre)) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Nombre inválido',
+                    text: 'El nombre solo debe contener letras y espacios.',
+                    icon: 'error',
+                    confirmButtonColor: '#3e929a'
+                });
+                return;
+            }
+
+            if (pass.length < 8) {
+                e.preventDefault();
+                Swal.fire({
+                    title: 'Contraseña corta',
+                    text: 'La contraseña debe tener al menos 8 caracteres.',
+                    icon: 'warning',
+                    confirmButtonColor: '#3e929a'
+                });
+            }
+        });
+    </script>
+
+    @* Captura errores del Servidor (Identity, Correo duplicado, etc) *@
+    @if (TempData["ErrorRegistro"] != null)
+    {
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                container.classList.add("right-panel-active");
+                Swal.fire({
+                    title: 'Verifica los datos',
+                    html: '<div class="text-start">@Html.Raw(TempData["ErrorRegistro"])</div>',
+                    icon: 'error',
+                    confirmButtonText: 'Corregir',
+                    confirmButtonColor: '#3e929a'
+                });
+            });
+        </script>
+    }
+}
