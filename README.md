@@ -5,8 +5,6 @@ VetCare is a web application built with **ASP.NET Core MVC 8.0** designed to man
 ![Entity Framework](https://img.shields.io/badge/EF%20Core-8.0-512bd4)
 ![License](https://img.shields.io/badge/License-MIT-green)
 
-**VetCare** is a robust management platform built with **ASP.NET Core MVC 8.0**, designed to streamline veterinary clinic operations. It integrates secure authentication, medical history tracking, and a specialized scheduling system.
-
 ---
 
 ## 🌟 Key Features
